@@ -1,5 +1,6 @@
 package org.apache.tinkerpop.gremlin.trueno.structure;
 
+import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.lang.NotImplementedException;
 
@@ -20,31 +21,52 @@ import java.util.Iterator;
 /**
  * @author Edgardo Barsallo Yi (ebarsallo)
  */
+@Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_STANDARD)
+@Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_PERFORMANCE)
 public class TruenoGraph implements Graph {
 
 
     protected Trueno trueno;
 
+    public static final String CONFIG_SERVER = "gremlin.trueno.server";
+    public static final String CONFIG_CONF = "gremlin.trueno.conf";
+
+
+    protected BaseConfiguration configuration = new BaseConfiguration();
+
+    private void initialize(final Configuration configuration) {
+
+        this.configuration.copy(configuration);
+
+        /* instantiate Trueno driver */
+        trueno  = new Trueno("http://localhost", 8000);
+    }
 
     /**
      *
      * @param configuration
      */
-    public TruenoGraph (final Configuration configuration) {
-
-        // TODO:
-
-        // TODO: constructor
-        initialize();
-
+    protected TruenoGraph(final TruenoGraph baseGraph, final Configuration configuration) {
+        this.initialize(configuration);
     }
 
-    private void initialize() {
+    protected TruenoGraph(final Configuration configuration) {
+        this.initialize(configuration);
+    }
 
-        /* instantiate Trueno driver */
-        trueno  = new Trueno("http://localhost", 8000);
+    /**
+     * Open a new {@link TruenoGraph} instance.
+     *
+     * @param configuration the configuration for the instance.
+     * @return a newly opened {@link org.apache.tinkerpop.gremlin.structure.Graph}
+     */
+    public static TruenoGraph open (final Configuration configuration) {
+        if (null == configuration) throw  Graph.Exceptions.argumentCanNotBeNull("configuration");
 
+        /* Check configuration parameters */
+//        if (!configuration.containsKey())
 
+        return null;
     }
 
     /**

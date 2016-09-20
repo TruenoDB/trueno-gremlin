@@ -38,9 +38,19 @@ limitations under the License.
             <version>${project.version}</version>
         </dependency>
 
-        <!-- TODO: Add trueno-java-driver dependency -->
+        <!--
+          trueno-java-driver dependency
+          TODO: change to maven repository when the java-driver is stable
+        -->
+        <dependency>
+            <groupId>org.trueno.driver</groupId>
+            <artifactId>trueno-java-driver</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/trueno-java-driver-1.0.jar</systemPath>
+        </dependency>
 
-        <!-- TESTING -->
+        <!-- Testing. Gremlin Test Suite -->
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-test</artifactId>
@@ -65,11 +75,17 @@ limitations under the License.
                 <directory>${basedir}/src/main/resources</directory>
             </resource>
         </resources>
+        <testResources>
+            <testResource>
+                <directory>${basedir}/src/test/resources</directory>
+            </testResource>
+        </testResources>
 
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
@@ -77,5 +93,43 @@ limitations under the License.
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <!--
+              Use this profile if you want the test suite to run.
+            -->
+            <id>release</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-surefire-plugin</artifactId>
+                        <version>2.17</version>
+                        <configuration>
+                            <skipTests>false</skipTests>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <version>2.17</version>
+                        <configuration>
+                            <skipTests>false</skipTests>
+                            <reuseForks>false</reuseForks>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-deploy-plugin</artifactId>
+                        <version>2.8.1</version>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>
