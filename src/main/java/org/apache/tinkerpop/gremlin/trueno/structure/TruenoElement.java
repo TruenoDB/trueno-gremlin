@@ -4,6 +4,8 @@ import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Property;
 
+import org.trueno.driver.lib.core.data_structures.Component;
+
 import java.util.Iterator;
 
 /**
@@ -11,19 +13,32 @@ import java.util.Iterator;
  */
 public class TruenoElement implements Element {
 
+    protected final Component baseElement;
+    protected final TruenoGraph graph;
+
+    public TruenoElement(final Component baseElement, final TruenoGraph graph) {
+        /* Sanity checks */
+        if (baseElement == null)
+            throw  new IllegalArgumentException("Component must not be nul!");
+
+        this.baseElement = baseElement;
+        this.graph = graph;
+    }
+
     @Override
     public Object id() {
-        return null;
+        return this.baseElement.getId();
     }
 
     @Override
     public String label() {
-        return null;
+        /* Element label is stored on Trueno as a property */
+        return this.baseElement.getProperty("label").toString();
     }
 
     @Override
     public Graph graph() {
-        return null;
+        return this.graph;
     }
 
     @Override

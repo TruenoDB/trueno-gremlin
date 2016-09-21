@@ -1,5 +1,6 @@
 package org.apache.tinkerpop.gremlin.trueno.structure;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.tinkerpop.gremlin.structure.*;
 
 import java.util.Iterator;
@@ -7,10 +8,15 @@ import java.util.Iterator;
 /**
  * @author Edgardo Barsallo Yi (ebarsallo)
  */
-public class TruenoVertex implements Vertex {
+public class TruenoVertex extends TruenoElement implements Vertex {
 
     @Override
     public Edge addEdge(String s, Vertex vertex, Object... objects) {
+        return null;
+    }
+
+    @Override
+    public <V> VertexProperty<V> property(final String key, final V value) {
         return null;
     }
 

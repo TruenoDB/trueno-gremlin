@@ -26,32 +26,41 @@ import java.util.Iterator;
 public class TruenoGraph implements Graph {
 
 
-    protected Trueno trueno;
+    /* Database features */
+    protected Features features = new TruenoGraphFeatures();
 
+    protected Trueno baseGraph;
+
+    /* Config settings for standalone installation */
     public static final String CONFIG_SERVER = "gremlin.trueno.server";
+    public static final String CONFIG_PORT = "gremlin.trueno.port";
     public static final String CONFIG_CONF = "gremlin.trueno.conf";
 
 
     protected BaseConfiguration configuration = new BaseConfiguration();
 
-    private void initialize(final Configuration configuration) {
-
-        this.configuration.copy(configuration);
-
-        /* instantiate Trueno driver */
-        trueno  = new Trueno("http://localhost", 8000);
+    /**
+     * Initialize {@link TruenoGraph} instance.
+     *
+     * @param graph the instance of TruenoGraph.
+     * @param configuration the configuration.
+     */
+    private void initialize(final Trueno graph, final Configuration configuration) {
+        this.baseGraph = graph;
+        // TODO: Do some inits on graph object
     }
 
-    /**
-     *
-     * @param configuration
-     */
-    protected TruenoGraph(final TruenoGraph baseGraph, final Configuration configuration) {
-        this.initialize(configuration);
+    protected TruenoGraph(final Trueno baseGraph, final Configuration configuration) {
+        this.initialize(baseGraph, configuration);
     }
 
     protected TruenoGraph(final Configuration configuration) {
-        this.initialize(configuration);
+        this.configuration.copy(configuration);
+
+        /* Create an instance of */
+        this.baseGraph = new Trueno(configuration.getString(CONFIG_SERVER), configuration.getInt(CONFIG_PORT));
+        // TODO: Create a TruenoFactory to create an instance from the config file (java-driver)
+        this.initialize(this.baseGraph, configuration);
     }
 
     /**
@@ -60,13 +69,29 @@ public class TruenoGraph implements Graph {
      * @param configuration the configuration for the instance.
      * @return a newly opened {@link org.apache.tinkerpop.gremlin.structure.Graph}
      */
-    public static TruenoGraph open (final Configuration configuration) {
+    public static TruenoGraph open(final Configuration configuration) {
         if (null == configuration) throw  Graph.Exceptions.argumentCanNotBeNull("configuration");
 
-        /* Check configuration parameters */
-//        if (!configuration.containsKey())
+        /* Check required configuration parameters */
+        if (!configuration.containsKey(CONFIG_SERVER))
+            throw new IllegalArgumentException(String.format("Trueno configuration requires that %s to be set", CONFIG_SERVER));
 
-        return null;
+        return new TruenoGraph(configuration);
+    }
+
+    /**
+     * Construct a TruenoGraph instance by specifying the hostname and port where the Trueno Core server resides,
+     * assuming a local setup.
+     *
+     * @param hostname the hostname where Trueno Core server resides.
+     * @param port the port of connection to the Trueno Core server.
+     * @return a newly opened {@link org.apache.tinkerpop.gremlin.structure.Graph}
+     */
+    public static TruenoGraph open(final String hostname, final String port) {
+        final Configuration config = new BaseConfiguration();
+        config.setProperty(CONFIG_SERVER, hostname);
+        config.setProperty(CONFIG_PORT, port);
+        return open(config);
     }
 
     /**
@@ -83,6 +108,8 @@ public class TruenoGraph implements Graph {
 //        // https://github.com/neo4j-contrib/neo4j-tinkerpop-api-impl/blob/3.0/src/main/java/org/neo4j/tinkerpop/api/impl/Neo4jGraphAPIImpl.java
 //        final Neo4jVertex vertex =
 //                new Neo4jVertex(this.baseGraph.createNode(ElementHelper.getLabelValue(keyValues).orElse(Vertex.DEFAULT_LABEL).split(Neo4jVertex.LABEL_DELIMINATOR)), this);
+
+//        this.baseGraph.createVertex(ElementHelper.getLabelValue(keyValues));
 
         final TruenoVertex vertex = null;
         // TODO: implements createNode() in java-driver
@@ -112,7 +139,6 @@ public class TruenoGraph implements Graph {
 
     @Override
     public Transaction tx() {
-
         throw new NotImplementedException();
     }
 
@@ -123,19 +149,30 @@ public class TruenoGraph implements Graph {
      */
     @Override
     public void close() throws Exception {
-
-        // TODO: implement close graph.
+        // TODO: implement shutdown graph.
     }
 
     @Override
     public Variables variables() {
-
         throw new NotImplementedException();
     }
 
     @Override
     public Configuration configuration() {
-        return null;
+        return this.configuration;
     }
 
+    @Override
+    public Features features() {
+        return features;
+    }
+
+    public Trueno getBaseGraph() {
+        return this.baseGraph;
+    }
+
+    // TODO: implement feature class
+    public class TruenoGraphFeatures implements Features {
+
+    }
 }
