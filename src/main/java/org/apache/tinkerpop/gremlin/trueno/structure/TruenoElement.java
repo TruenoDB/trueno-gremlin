@@ -3,20 +3,25 @@ package org.apache.tinkerpop.gremlin.trueno.structure;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 
+import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 import org.trueno.driver.lib.core.data_structures.Component;
+import org.json.JSONObject;
 
 import java.util.Iterator;
+
+import static org.apache.tinkerpop.gremlin.structure.Column.keys;
 
 /**
  * @author Edgardo Barsallo Yi (ebarsallo)
  */
-public class TruenoElement implements Element {
+public abstract class TruenoElement implements Element {
 
     protected final Component baseElement;
     protected final TruenoGraph graph;
 
-    public TruenoElement(final Component baseElement, final TruenoGraph graph) {
+    TruenoElement(final Component baseElement, final TruenoGraph graph) {
         /* Sanity checks */
         if (baseElement == null)
             throw  new IllegalArgumentException("Component must not be nul!");
@@ -43,17 +48,38 @@ public class TruenoElement implements Element {
 
     @Override
     public <V> Property<V> property(String s, V v) {
-        return null;
+        /* Sanity checks */
+        ElementHelper.validateProperty(s, v);
+        /* Set property to Trueno base element */
+        this.getBaseElement().setProperty(s, v);
+        return new TruenoProperty<V>(this, s, v);
     }
 
     @Override
-    public void remove() {
+    public <V> Iterator<? extends Property<V>> properties(String... keys) {
+        return (Iterator)IteratorUtils.stream(this.getBaseElement().properties().keys())
+                .filter(key -> ElementHelper.keyExists(key, keys))
+                .map(key -> new TruenoProperty<>(this, key, (V) this.getBaseElement().getProperty(key))).iterator();
+    }
 
+    /**
+     * Returns a Trueno base element.
+     *
+     * @return the base element class {@link org.trueno.driver.lib.core.data_structures.Component}
+     */
+    public Component getBaseElement() {
+        return this.baseElement;
     }
 
     @Override
-    public <V> Iterator<? extends Property<V>> properties(String... strings) {
-        return null;
+    public int hashCode() {
+        return ElementHelper.hashCode(this);
     }
+
+    @Override
+    public final boolean equals(final Object object) {
+        return ElementHelper.areEqual(this, object);
+    }
+
 
 }

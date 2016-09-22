@@ -27,7 +27,7 @@ public class TruenoGraph implements Graph {
 
 
     /* Database features */
-    protected Features features = new TruenoGraphFeatures();
+    protected Features features = new TruenoFeatures();
 
     protected Trueno baseGraph;
 
@@ -167,12 +167,13 @@ public class TruenoGraph implements Graph {
         return features;
     }
 
+    /**
+     * Returns an instance of the API of Trueno Graph.
+     *
+     * @return the Trueno {@link org.trueno.driver.lib.core.Trueno} instance.
+     */
     public Trueno getBaseGraph() {
         return this.baseGraph;
     }
 
-    // TODO: implement feature class
-    public class TruenoGraphFeatures implements Features {
-
-    }
 }

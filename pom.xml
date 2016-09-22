@@ -43,6 +43,12 @@ limitations under the License.
           TODO: change to maven repository when the java-driver is stable
         -->
         <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+            <version>20160212</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.trueno.driver</groupId>
             <artifactId>trueno-java-driver</artifactId>
             <version>1.0</version>

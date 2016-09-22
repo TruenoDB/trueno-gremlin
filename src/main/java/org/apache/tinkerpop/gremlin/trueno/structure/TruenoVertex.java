@@ -2,6 +2,7 @@ package org.apache.tinkerpop.gremlin.trueno.structure;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.apache.tinkerpop.gremlin.structure.*;
+import org.trueno.driver.lib.core.data_structures.Component;
 
 import java.util.Iterator;
 
@@ -9,6 +10,10 @@ import java.util.Iterator;
  * @author Edgardo Barsallo Yi (ebarsallo)
  */
 public class TruenoVertex extends TruenoElement implements Vertex {
+
+    TruenoVertex(final Component baseElement, final TruenoGraph graph) {
+        super(baseElement, graph);
+    }
 
     @Override
     public Edge addEdge(String s, Vertex vertex, Object... objects) {
