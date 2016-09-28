@@ -4,7 +4,10 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.AbstractGraphProvider;
 import org.apache.tinkerpop.gremlin.LoadGraphWith;
 import org.apache.tinkerpop.gremlin.structure.Graph;
+import org.apache.tinkerpop.gremlin.trueno.structure.*;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,9 +16,22 @@ import java.util.Set;
  */
 public class TruenoGraphProvider extends AbstractGraphProvider {
 
+    private static final Set<Class> IMPLEMENTATIONS = new HashSet<Class>() {{
+        add(TruenoEdge.class);
+        add(TruenoElement.class);
+        add(TruenoGraph.class);
+        add(TruenoProperty.class);
+        add(TruenoVertex.class);
+        add(TruenoVertexProperty.class);
+    }};
+
     @Override
-    public Map<String, Object> getBaseConfiguration(String s, Class<?> aClass, String s1, LoadGraphWith.GraphData graphData) {
-        return null;
+    public Map<String, Object> getBaseConfiguration(String graphName, Class<?> test, String testMethodName, LoadGraphWith.GraphData graphData) {
+        return new HashMap<String, Object>() {{
+            put(Graph.GRAPH, TruenoGraph.class.getName());
+            put(TruenoGraph.CONFIG_DATABASE, graphName + "-" + test.getSimpleName() + "-" + testMethodName);
+        }};
+
     }
 
     @Override
@@ -25,6 +41,6 @@ public class TruenoGraphProvider extends AbstractGraphProvider {
 
     @Override
     public Set<Class> getImplementations() {
-        return null;
+        return IMPLEMENTATIONS;
     }
 }

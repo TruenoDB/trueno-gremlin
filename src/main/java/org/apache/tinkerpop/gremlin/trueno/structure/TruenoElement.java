@@ -3,8 +3,10 @@ package org.apache.tinkerpop.gremlin.trueno.structure;
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 
+import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedElement;
 import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 import org.trueno.driver.lib.core.data_structures.Component;
 import org.json.JSONObject;
@@ -16,7 +18,7 @@ import static org.apache.tinkerpop.gremlin.structure.Column.keys;
 /**
  * @author Edgardo Barsallo Yi (ebarsallo)
  */
-public abstract class TruenoElement implements Element {
+public abstract class TruenoElement implements Element, WrappedElement<Component> {
 
     protected final Component baseElement;
     protected final TruenoGraph graph;
@@ -47,12 +49,12 @@ public abstract class TruenoElement implements Element {
     }
 
     @Override
-    public <V> Property<V> property(String s, V v) {
+    public <V> Property<V> property(String key, V value) {
         /* Sanity checks */
-        ElementHelper.validateProperty(s, v);
+        ElementHelper.validateProperty(key, value);
         /* Set property to Trueno base element */
-        this.getBaseElement().setProperty(s, v);
-        return new TruenoProperty<V>(this, s, v);
+        this.getBaseElement().setProperty(key, value);
+        return new TruenoProperty<V>(this, key, value);
     }
 
     @Override
@@ -62,11 +64,7 @@ public abstract class TruenoElement implements Element {
                 .map(key -> new TruenoProperty<>(this, key, (V) this.getBaseElement().getProperty(key))).iterator();
     }
 
-    /**
-     * Returns a Trueno base element.
-     *
-     * @return the base element class {@link org.trueno.driver.lib.core.data_structures.Component}
-     */
+    @Override
     public Component getBaseElement() {
         return this.baseElement;
     }

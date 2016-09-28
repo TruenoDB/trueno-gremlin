@@ -188,7 +188,7 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 
             @Override
             public boolean supportsUserSuppliedIds() {
-                return false;
+                return true;
             }
 
             @Override
