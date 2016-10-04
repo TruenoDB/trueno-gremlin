@@ -20,26 +20,14 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import static java.lang.Thread.sleep;
+
 
 /**
  * @author Edgardo Barsallo Yi (ebarsallo)
  */
 @Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_STANDARD)
 @Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_PERFORMANCE)
-
-@Graph.OptOut(
-        test = "org.apache.tinkerpop.gremlin.structure.VertexTest$AddEdgeTest",
-        method = "*",
-        reason = "Trueno gremlin API is under construction.")
-@Graph.OptOut(
-        test = "org.apache.tinkerpop.gremlin.structure.TransactionTest",
-        method = "*",
-        reason = "Trueno gremlin API is under construction.")
-@Graph.OptOut(
-        test = "org.apache.tinkerpop.gremlin.algorithm.generator.CommunityGeneratorTest$ProcessorTest",
-        method = "*",
-        reason = "Trueno gremlin API is under construction."
-)
 public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.core.data_structures.Graph> {
 
     /* Trueno Graph API */
@@ -69,19 +57,11 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
      * @param configuration the configuration.
      */
     private void initialize(final Trueno graphAPI, final Configuration configuration) {
-        this.graphAPI = graphAPI;
-        // TODO: Do some inits on graph object
-
-        /* Establish connection */
-        graphAPI.connect(conn -> {
-            // TODO: implement an API level function that creates the graph if it doesnot exists.
-            /* Open database */
-            org.trueno.driver.lib.core.data_structures.Graph graph;
-            graph = graphAPI.Graph(configuration.getString(CONFIG_DATABASE));
-        }, socket -> {
-            /* Disconnect */
-            System.out.println("disconnected");
-        });
+        /* Init GraphAPI and Trueno 'raw' Graph object */
+        this.graphAPI  = graphAPI;
+        this.baseGraph = graphAPI.Graph(configuration.getString(CONFIG_DATABASE));
+        /* Open database and get an instance (or create it) from the database */
+        TruenoHelper.getInstace(this);
     }
 
     protected TruenoGraph(final Trueno graphAPI, final Configuration configuration) {
@@ -90,11 +70,16 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
 
     protected TruenoGraph(final Configuration configuration) {
         this.configuration.copy(configuration);
-
         /* Create an instance of */
-        this.graphAPI = new Trueno(configuration.getString(CONFIG_SERVER), configuration.getInt(CONFIG_PORT));
+        Trueno trueno = new Trueno(configuration.getString(CONFIG_SERVER), configuration.getInt(CONFIG_PORT));
+        /* Establish connection */
+        trueno.connect((socket)->{
+            System.out.println("[" + socket.id() + "] connected:  " + configuration.getString(CONFIG_DATABASE));
+        }, (socket)->{
+            System.out.println("[" + socket.id() + "] disconnected");
+        });
         // TODO: Create a TruenoFactory to create an instance from the config file (java-driver)
-        this.initialize(this.graphAPI, configuration);
+        this.initialize(trueno, configuration);
     }
 
     /**
@@ -158,8 +143,7 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
 
 //        this.baseGraph.createVertex(ElementHelper.getLabelValue(keyValues));
 
-        final TruenoVertex vertex = null;
-        // TODO: implements createNode() in java-driver
+        final TruenoVertex vertex = new TruenoVertex(this.baseGraph.addVertex(), this);
         ElementHelper.attachProperties(vertex, keyValues);
         return vertex;
     }
@@ -176,20 +160,21 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
 
     @Override
     public Iterator<Vertex> vertices(Object... vertexIds) {
-        // TODO: Move basica functionality to TruenoHelper
+        // TODO: Move basic functionality to TruenoHelper
         final List<Vertex> vertices = new ArrayList<>();
 
         /* No predicate (retrieve all nodes) */
         if (0 == vertexIds.length) {
-            this.getBaseGraph().fetch("v").whenCompleteAsync((result, err) -> {
+            System.out.println("vertices(): no-filter");
+            this.getBaseGraph().fetch("v").whenComplete((result, err) -> {
                 if (result != null) {
-                    System.out.println(result);
+                    System.out.println("vertices(): fetch -->" + result.length());
                 } else {
-                    System.out.println(result);
+                    System.out.println("vertices(): fetch -->" + result);
                 }
             });
         } else {
-
+            System.out.println("vertices(): filter");
         }
 
         return vertices.iterator();

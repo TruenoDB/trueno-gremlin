@@ -51,6 +51,11 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
             public VariableFeatures variables() {
                 return variableFeatures;
             }
+
+            @Override
+            public boolean supportsPersistence() {
+                return true;
+            }
         }
 
         /**
@@ -90,6 +95,55 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
                 return false;
             }
 
+            @Override
+            public boolean supportsAddVertices() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsRemoveVertices() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsAddProperty() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsRemoveProperty() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsNumericIds() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsStringIds() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsUuidIds() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsCustomIds() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsAnyIds() {
+                return false;
+            }
+
+            @Override
+            public boolean willAllowId(Object id) {
+                return false;
+            }
         }
 
         /**
@@ -105,6 +159,61 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
             @Override
             public EdgePropertyFeatures properties() {
                 return this.edgePropertyFeatures;
+            }
+
+            @Override
+            public boolean supportsAddEdges() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsRemoveEdges() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsAddProperty() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsRemoveProperty() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsUserSuppliedIds() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsNumericIds() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsStringIds() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsUuidIds() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsCustomIds() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsAnyIds() {
+                return false;
+            }
+
+            @Override
+            public boolean willAllowId(Object id) {
+                return false;
             }
         }
 
@@ -177,6 +286,36 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
             public boolean supportsUniformListValues() {
                 return false;
             }
+
+            @Override
+            public boolean supportsVariables() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsBooleanValues() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsDoubleValues() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsFloatValues() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsIntegerValues() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsLongValues() {
+                return true;
+            }
         }
         /**
          * Features that are related to Vertex Property objects and supported by Trueno.
@@ -215,6 +354,111 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
             public boolean supportsUniformListValues() {
                 return false;
             }
+
+            @Override
+            public boolean supportsRemoveProperty() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsNumericIds() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsStringIds() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsUuidIds() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsCustomIds() {
+                return false;
+            }
+
+            @Override
+            public boolean willAllowId(Object id) {
+                return false;
+            }
+
+            @Override
+            public boolean supportsProperties() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsBooleanValues() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsByteValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsDoubleValues() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsFloatValues() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsIntegerValues() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsLongValues() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsBooleanArrayValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsByteArrayValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsDoubleArrayValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsFloatArrayValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsIntegerArrayValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsStringArrayValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsLongArrayValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsStringValues() {
+                return true;
+            }
         }
 
         /**
@@ -243,6 +487,81 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
             @Override
             public boolean supportsUniformListValues() {
                 return false;
+            }
+
+            @Override
+            public boolean supportsProperties() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsBooleanValues() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsByteValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsDoubleValues() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsFloatValues() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsIntegerValues() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsLongValues() {
+                return true;
+            }
+
+            @Override
+            public boolean supportsBooleanArrayValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsByteArrayValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsDoubleArrayValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsFloatArrayValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsIntegerArrayValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsStringArrayValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsLongArrayValues() {
+                return false;
+            }
+
+            @Override
+            public boolean supportsStringValues() {
+                return true;
             }
         }
 

@@ -16,6 +16,16 @@ public class TruenoHelper {
 
     }
 
+    public static void getInstace(final TruenoGraph graph) {
+        graph.getBaseGraph().open().whenComplete((result, err) -> {
+           if (result != null) {
+               System.out.println("open: good!");
+           }  else {
+               System.out.println("open: baad!");
+           }
+        });
+    }
+
     public static Iterator<TruenoVertex> getVertices(final TruenoVertex vertex, final Direction direction, final String...edgeLabels) {
         final List<Vertex> vertices = new ArrayList<>();
 
