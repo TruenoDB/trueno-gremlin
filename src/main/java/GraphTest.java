@@ -3,6 +3,8 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.trueno.structure.TruenoGraph;
+import org.apache.tinkerpop.gremlin.trueno.structure.TruenoHelper;
+import org.apache.tinkerpop.gremlin.trueno.structure.TruenoVertex;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -14,7 +16,7 @@ import static java.lang.Thread.sleep;
  */
 public class GraphTest {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws Exception {
         System.out.println("testing ...");
         final Configuration config = new BaseConfiguration();
         config.setProperty(TruenoGraph.CONFIG_SERVER, "http://localhost");
@@ -31,19 +33,28 @@ public class GraphTest {
             HashMap<String, String> props = new HashMap<>();
             props.put("label", "principal");
 
-            g.addVertex(T.label, "one");
-            g.addVertex(T.label, "two");
-            g.addVertex(T.label, "three");
-            g.addVertex();
+            Vertex vertex1 = g.addVertex(T.id, 10);
+            Vertex vertex2 = g.addVertex(T.id, 11);
+            Vertex vertex3 = g.addVertex(T.id, 12);
 
-            Iterator<Vertex> vertices = g.vertices();
-            while (vertices.hasNext()) {
-                System.out.println("vertice: " + vertices.next());
+            /* Retrieve vertices without filter */
+            System.out.println("Retrieve all vertices");
+            Iterator<Vertex> v1 = g.vertices();
+            while (v1.hasNext()) {
+                System.out.println("vertice [1]: " + v1.next());
+            }
+
+            /* Retrieve using some filter */
+            System.out.println("Retrieve some vertices using a filter");
+            Iterator<Vertex> v2 = g.vertices(5,4);
+            while (v2.hasNext()) {
+                System.out.println("vertice [2]: " + v2.next());
             }
 
         } else {
             System.out.println("not connected");
         }
+        g.close();
         System.out.println("end");
     }
 }

@@ -7,6 +7,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.NotImplementedException;
 
 import org.apache.tinkerpop.gremlin.process.computer.GraphComputer;
+import org.apache.tinkerpop.gremlin.process.traversal.NumberHelper;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Transaction;
@@ -15,12 +16,14 @@ import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedGraph;
 
 import org.trueno.driver.lib.core.Trueno;
+import org.trueno.driver.lib.core.data_structures.Component;
 import sun.awt.Mutex;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Semaphore;
+import java.util.stream.Stream;
 
 import static java.lang.Thread.sleep;
 
@@ -34,6 +37,8 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
 
     /* Trueno Graph API */
     protected Trueno graphAPI;
+
+    private String socketId;
 
     /* Graph Component */
     protected org.trueno.driver.lib.core.data_structures.Graph baseGraph;
@@ -77,9 +82,11 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
         Trueno trueno = new Trueno(configuration.getString(CONFIG_SERVER), configuration.getInt(CONFIG_PORT));
         /* Establish connection */
         trueno.connect((socket)->{
-            System.out.println("[" + socket.id() + "] connected:  " + configuration.getString(CONFIG_DATABASE));
+            socketId = socket.id();
+            System.out.println("[" + this.socketId + "] connected:  " + configuration.getString(CONFIG_DATABASE));
         }, (socket)->{
-            System.out.println("[" + socket.id() + "] disconnected");
+            String id = this.socketId;
+            System.out.println("[" + id + "] disconnected");
         });
         // TODO: Create a TruenoFactory to create an instance from the config file (java-driver)
         this.initialize(trueno, configuration);
@@ -147,7 +154,14 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
 //        this.baseGraph.createVertex(ElementHelper.getLabelValue(keyValues));
 
         final TruenoVertex vertex = new TruenoVertex(this.baseGraph.addVertex(), this);
+
+        if (!ElementHelper.getIdValue(keyValues).isPresent()) {
+            throw new RuntimeException("Id Not Supplied");
+        }
         ElementHelper.attachProperties(vertex, keyValues);
+        vertex.getBaseVertex().setId(ElementHelper.getIdValue(keyValues).get());
+        System.out.println("addVertex --> " + vertex.getBaseVertex());
+        TruenoHelper.persist(vertex);
         return vertex;
     }
 
@@ -170,7 +184,6 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
         /* No predicate (retrieve all nodes) */
         if (0 == vertexIds.length) {
             System.out.println("vertices(): no-filter");
-//            return TruenoHelper.getAllVertices(this, mutex);
             try {
                 return TruenoHelper.getAllVertices(this);
             } catch (InterruptedException e) {
@@ -178,15 +191,29 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
             }
         } else {
             System.out.println("vertices(): filter");
+            ElementHelper.validateMixedElementIds(Vertex.class, vertexIds);
+            return Stream.of(vertexIds)
+//                    .map(id -> {
+//                        if (id instanceof Number) {
+//                            return ((Number) id).longValue();
+//                        } else {
+//                            throw new IllegalArgumentException("Unknown vertex id type: " + id);
+//                        }
+//                    })
+                    .flatMap(id -> {
+                        try {
+                            return Stream.of(TruenoHelper.getVertex(this, id));
+                        } catch (final RuntimeException e) {
+                            if (TruenoHelper.isNotFound(e)) return Stream.empty();
+                            e.printStackTrace();
+                            throw e;
+                        } catch (final InterruptedException e) {
+                            e.printStackTrace();
+                            return Stream.empty();
+                        }
+                    })
+                    .map(node -> (Vertex) new TruenoVertex(node, this)).iterator();
         }
-
-        try {
-            // stop here
-            mutex.acquire();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
         return vertices.iterator();
     }
 
@@ -207,7 +234,8 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
      */
     @Override
     public void close() throws Exception {
-        // TODO: implement shutdown graph.
+        /* disconnect socket */
+        this.getGraphAPI().disconnect();
     }
 
     @Override
