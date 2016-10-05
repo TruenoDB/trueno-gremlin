@@ -1,9 +1,11 @@
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.structure.T;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.trueno.structure.TruenoGraph;
 
 import java.util.HashMap;
+import java.util.Iterator;
 
 import static java.lang.Thread.sleep;
 
@@ -33,7 +35,11 @@ public class GraphTest {
             g.addVertex(T.label, "two");
             g.addVertex(T.label, "three");
             g.addVertex();
-            g.vertices();
+
+            Iterator<Vertex> vertices = g.vertices();
+            while (vertices.hasNext()) {
+                System.out.println("vertice: " + vertices.next());
+            }
 
         } else {
             System.out.println("not connected");

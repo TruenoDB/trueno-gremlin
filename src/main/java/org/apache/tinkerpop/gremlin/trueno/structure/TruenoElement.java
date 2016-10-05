@@ -32,6 +32,19 @@ public abstract class TruenoElement implements Element, WrappedElement<Component
         this.graph = graph;
     }
 
+    TruenoElement(final JSONObject obj, final TruenoGraph graph) {
+        /* Sanity checks */
+        if (obj == null)
+            throw  new IllegalArgumentException("Component must not be nul!");
+
+//        System.out.println("TruenoElement() --> " + obj);
+        Component baseElement = new Component(obj);
+//        System.out.println("TruenoElement() --> " + obj);
+
+        this.baseElement = baseElement;
+        this.graph = graph;
+    }
+
     @Override
     public Object id() {
         return this.baseElement.getId();
@@ -79,5 +92,9 @@ public abstract class TruenoElement implements Element, WrappedElement<Component
         return ElementHelper.areEqual(this, object);
     }
 
+    @Override
+    public String toString() {
+        return this.baseElement.toString();
+    }
 
 }

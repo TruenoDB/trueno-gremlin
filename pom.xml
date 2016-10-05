@@ -49,6 +49,12 @@ limitations under the License.
         </dependency>
 
         <dependency>
+            <groupId>org.jdeferred</groupId>
+            <artifactId>jdeferred-core</artifactId>
+            <version>RELEASE</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.trueno.driver</groupId>
             <artifactId>trueno-java-driver</artifactId>
             <version>1.0</version>
@@ -113,7 +119,7 @@ limitations under the License.
                         <artifactId>maven-surefire-plugin</artifactId>
                         <version>2.17</version>
                         <configuration>
-                            <skipTests>false</skipTests>
+                            <skipTests>true</skipTests>
                         </configuration>
                     </plugin>
                     <plugin>

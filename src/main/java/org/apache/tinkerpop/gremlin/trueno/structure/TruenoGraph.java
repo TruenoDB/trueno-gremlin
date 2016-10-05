@@ -15,10 +15,12 @@ import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedGraph;
 
 import org.trueno.driver.lib.core.Trueno;
+import sun.awt.Mutex;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 import static java.lang.Thread.sleep;
 
@@ -43,6 +45,7 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     public static final String CONFIG_PORT     = "gremlin.trueno.storage.port";
     public static final String CONFIG_DATABASE = "gremlin.trueno.storage.database";
     public static final String CONFIG_CONF     = "gremlin.trueno.storage.conf";
+    static Semaphore mutex = new Semaphore(0);
 
     /* Graph configuration */
     protected BaseConfiguration configuration = new BaseConfiguration();
@@ -161,20 +164,27 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     @Override
     public Iterator<Vertex> vertices(Object... vertexIds) {
         // TODO: Move basic functionality to TruenoHelper
+
         final List<Vertex> vertices = new ArrayList<>();
 
         /* No predicate (retrieve all nodes) */
         if (0 == vertexIds.length) {
             System.out.println("vertices(): no-filter");
-            this.getBaseGraph().fetch("v").whenComplete((result, err) -> {
-                if (result != null) {
-                    System.out.println("vertices(): fetch -->" + result.length());
-                } else {
-                    System.out.println("vertices(): fetch -->" + result);
-                }
-            });
+//            return TruenoHelper.getAllVertices(this, mutex);
+            try {
+                return TruenoHelper.getAllVertices(this);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         } else {
             System.out.println("vertices(): filter");
+        }
+
+        try {
+            // stop here
+            mutex.acquire();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
         return vertices.iterator();

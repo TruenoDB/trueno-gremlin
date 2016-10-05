@@ -5,6 +5,7 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedVertex;
 
+import org.json.JSONObject;
 import org.trueno.driver.lib.core.data_structures.*;
 
 import java.util.Iterator;
@@ -16,6 +17,10 @@ public class TruenoVertex extends TruenoElement implements Vertex, WrappedVertex
 
     TruenoVertex(final Component baseElement, final TruenoGraph graph) {
         super(baseElement, graph);
+    }
+
+    public TruenoVertex(JSONObject object, TruenoGraph graph) {
+        super(object, graph);
     }
 
     @Override
@@ -67,13 +72,7 @@ public class TruenoVertex extends TruenoElement implements Vertex, WrappedVertex
     @Override
     public void remove() {
         this.getBaseElement().destroy();
-        this.graph.getBaseGraph().destroy().whenComplete((ret, error) -> {
-            if (ret != null) {
-
-            } else {
-                throw new Error ("Something bad happened: " + error);
-            }
-        });
+        TruenoHelper.destroy(this);
     }
 
     @Override
