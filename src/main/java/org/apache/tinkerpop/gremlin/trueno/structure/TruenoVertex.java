@@ -2,11 +2,12 @@ package org.apache.tinkerpop.gremlin.trueno.structure;
 
 import org.apache.tinkerpop.gremlin.structure.*;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedVertex;
-
 import org.json.JSONObject;
-import org.trueno.driver.lib.core.data_structures.*;
+
+import org.trueno.driver.lib.core.data_structures.Component;
 
 import java.util.Iterator;
 
@@ -77,6 +78,7 @@ public class TruenoVertex extends TruenoElement implements Vertex, WrappedVertex
 
     @Override
     public <V> Iterator<VertexProperty<V>> properties(String... strings) {
+        // TODO: Implement (should be similar for Edge)
         return null;
     }
 

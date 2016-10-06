@@ -20,6 +20,7 @@ import java.util.concurrent.Semaphore;
 /**
  * @author Edgardo Barsallo Yi (ebarsallo)
  */
+// TODO: Separate Helper in class, include in one class all funtion/operation that deals with iterators, on the other include more general operations.
 public class TruenoHelper {
 
     private static final String NOT_FOUND_EXCEPTION = "NotFoundException";
