@@ -52,8 +52,7 @@ public abstract class TruenoElement implements Element, WrappedElement<Component
 
     @Override
     public String label() {
-        /* Element label is stored on Trueno as a property */
-        return this.baseElement.getProperty("label").toString();
+        return this.baseElement.getLabel();
     }
 
     @Override
@@ -71,9 +70,9 @@ public abstract class TruenoElement implements Element, WrappedElement<Component
     }
 
     @Override
-    public <V> Iterator<? extends Property<V>> properties(String... keys) {
+    public <V> Iterator<? extends Property<V>> properties(String... propertyKeys) {
         return (Iterator)IteratorUtils.stream(this.getBaseElement().properties().keys())
-                .filter(key -> ElementHelper.keyExists(key, keys))
+                .filter(key -> ElementHelper.keyExists(key, propertyKeys))
                 .map(key -> new TruenoProperty<>(this, key, (V) this.getBaseElement().getProperty(key))).iterator();
     }
 

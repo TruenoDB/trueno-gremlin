@@ -16,6 +16,8 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Semaphore;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * @author Edgardo Barsallo Yi (ebarsallo)
@@ -123,4 +125,21 @@ public class TruenoHelper {
 //        return ex.getClass().getSimpleName().equals(NOT_FOUND_EXCEPTION);
         return ex.getMessage().equals(NOT_FOUND_EXCEPTION);
     }
+
+
+    // --- stream helpers
+    // As in orientdb driver
+    public static <T> Stream<T> asStream(Iterator<T> sourceIterator) {
+        return asStream(sourceIterator, false);
+    }
+
+    public static <T> Stream<T> asStream(Iterator<T> sourceIterator, boolean parallel) {
+        Iterable<T> iterable = () -> sourceIterator;
+        return StreamSupport.stream(iterable.spliterator(), parallel);
+    }
+
+//    public static Stream<String> asStream(String[] fieldNames) {
+//        return new ArrayList(fieldNames).stream();
+//    }
+
 }

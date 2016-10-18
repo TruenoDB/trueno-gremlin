@@ -1,8 +1,10 @@
 package org.apache.tinkerpop.gremlin.trueno.structure;
 
-import org.apache.tinkerpop.gremlin.structure.*;
-import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedVertex;
 import org.json.JSONObject;
@@ -38,6 +40,7 @@ public class TruenoVertex extends TruenoElement implements Vertex, WrappedVertex
     @Override
     public <V> VertexProperty<V> property(VertexProperty.Cardinality cardinality, String key, V value, Object... keyValues) {
         ElementHelper.validateProperty(key, value);
+//        System.out.println(" >> " + key + " ==> " + cardinality);
         /* Only single cardinality supported for now */
         if (cardinality != VertexProperty.Cardinality.single)
             throw VertexProperty.Exceptions.multiPropertiesNotSupported();
@@ -47,6 +50,11 @@ public class TruenoVertex extends TruenoElement implements Vertex, WrappedVertex
         } catch (final IllegalArgumentException iae) {
             throw Property.Exceptions.dataTypeOfPropertyValueNotSupported(value, iae);
         }
+    }
+
+    @Override
+    public <V> VertexProperty<V> property(final String key) {
+        return (this.getBaseVertex().hasProperty(key))? new TruenoVertexProperty<V>(this, key, (V)this.getBaseVertex().getProperty(key)): VertexProperty.<V>empty();
     }
 
     @Override
@@ -77,9 +85,10 @@ public class TruenoVertex extends TruenoElement implements Vertex, WrappedVertex
     }
 
     @Override
-    public <V> Iterator<VertexProperty<V>> properties(String... strings) {
-        // TODO: Implement (should be similar for Edge)
-        return null;
+    public <V> Iterator<VertexProperty<V>> properties(String... propertyKeys) {
+
+        Iterator<? extends Property> properties = super.properties(propertyKeys);
+        return TruenoHelper.asStream(properties).map(p -> (VertexProperty<V>)p).iterator();
     }
 
     @Override

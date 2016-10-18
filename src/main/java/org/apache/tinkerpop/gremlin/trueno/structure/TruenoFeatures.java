@@ -2,6 +2,7 @@ package org.apache.tinkerpop.gremlin.trueno.structure;
 
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
 
 /**
  * A class that represent the capabilities supported by Trueno Graph. By default all methods of features in
@@ -16,7 +17,27 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
         protected VertexFeatures vertexFeatures = new TruenoVertexFeatures();
         protected EdgeFeatures edgesFeatures = new TruenoEdgeFeatures();
 
-        /**
+        @Override
+        public GraphFeatures graph() {
+            return graphFeatures;
+        }
+
+        @Override
+        public VertexFeatures vertex() {
+            return vertexFeatures;
+        }
+
+        @Override
+        public EdgeFeatures edge() {
+            return edgesFeatures;
+        }
+
+        @Override
+        public String toString() {
+            return StringFactory.featureString(this);
+        }
+
+    /**
          * Features specific to a operations of a Trueno Graph
          * {@link org.apache.tinkerpop.gremlin.trueno.structure.TruenoGraph}.
          */
@@ -74,6 +95,7 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
                 return this.vertexPropertyFeatures;
             }
 
+            // FIXME: This should be more dynamic, and not always returning Cardinality.single
             @Override
             public VertexProperty.Cardinality getCardinality(String key) {
                 return VertexProperty.Cardinality.single;
@@ -85,10 +107,10 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
                 return false;
             }
 
-            @Override
-            public boolean supportsMultiProperties() {
-                return false;
-            }
+//            @Override
+//            public boolean supportsMultiProperties() {
+//                return true;
+//            }
 
             @Override
             public boolean supportsUserSuppliedIds() {
