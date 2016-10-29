@@ -19,9 +19,8 @@ import static org.apache.tinkerpop.gremlin.structure.Column.keys;
  * @author Edgardo Barsallo Yi (ebarsallo)
  */
 public abstract class TruenoElement implements Element, WrappedElement<Component> {
-
-    protected final Component baseElement;
     protected final TruenoGraph graph;
+    protected final Component baseElement;
 
     TruenoElement(final Component baseElement, final TruenoGraph graph) {
         /* Sanity checks */
@@ -37,7 +36,7 @@ public abstract class TruenoElement implements Element, WrappedElement<Component
         if (obj == null)
             throw  new IllegalArgumentException("Component must not be nul!");
 
-//        System.out.println("TruenoElement() --> " + obj);
+        System.out.println("TruenoElement() --> " + obj);
         Component baseElement = new Component(obj);
 //        System.out.println("TruenoElement() --> " + obj);
 

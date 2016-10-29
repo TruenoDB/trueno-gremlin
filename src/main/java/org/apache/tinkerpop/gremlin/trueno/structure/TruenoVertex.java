@@ -1,16 +1,18 @@
 package org.apache.tinkerpop.gremlin.trueno.structure;
 
-import org.apache.tinkerpop.gremlin.structure.Direction;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
+import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedVertex;
 import org.json.JSONObject;
 
 import org.trueno.driver.lib.core.data_structures.Component;
 
+import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -27,9 +29,25 @@ public class TruenoVertex extends TruenoElement implements Vertex, WrappedVertex
     }
 
     @Override
-    public Edge addEdge(String s, Vertex vertex, Object... objects) {
-        // TODO: public Edge addEdge(...)
-        return null;
+    public Edge addEdge(String label, Vertex inVertex, Object... keyValues) {
+        if (null == inVertex) throw Graph.Exceptions.argumentCanNotBeNull("inVertex");
+        ElementHelper.validateLabel(label);
+        ElementHelper.legalPropertyKeyValueArray(keyValues);
+
+        // FIXME: edge id should be auto generated, and not provided by the user (as mandatory).
+        if (!ElementHelper.getIdValue(keyValues).isPresent()) {
+            throw new RuntimeException("Id Not Supplied");
+        }
+
+        final org.trueno.driver.lib.core.data_structures.Vertex outVertex = (org.trueno.driver.lib.core.data_structures.Vertex) this.getBaseElement();
+        final TruenoEdge edge = new TruenoEdge(this.graph.getBaseGraph().addEdge(outVertex.getId(), ((TruenoVertex)inVertex).getBaseVertex().getId()), this.graph);
+        ElementHelper.attachProperties(edge, keyValues);
+
+        // TODO: implement vertex.addEdge(inVertex, label) in java-driver, and use it here.
+        edge.getBaseElement().setLabel(label);
+        edge.getBaseElement().setId(ElementHelper.getIdValue(keyValues).get());
+        TruenoHelper.persist(edge);
+        return edge;
     }
 
     @Override
@@ -59,13 +77,24 @@ public class TruenoVertex extends TruenoElement implements Vertex, WrappedVertex
 
     @Override
     public Iterator<Edge> edges(Direction direction, String... edgeLabels) {
-        // TODO: public Iterator<Edge> edges(...)
-        return null;
+        // FIXME: Handler better this exception.
+        try {
+            return (Iterator)TruenoHelper.getEdges(this, direction, edgeLabels);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return Collections.emptyIterator();
+        }
     }
 
     @Override
     public Iterator<Vertex> vertices(Direction direction, String... edgeLabels) {
-        return (Iterator)TruenoHelper.getVertices(this, direction, edgeLabels);
+        // FIXME: Handler better this exception.
+        try {
+            return (Iterator)TruenoHelper.getVertices(this, direction, edgeLabels);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return Collections.emptyIterator();
+        }
     }
 
 //    @Override
@@ -88,11 +117,19 @@ public class TruenoVertex extends TruenoElement implements Vertex, WrappedVertex
     public <V> Iterator<VertexProperty<V>> properties(String... propertyKeys) {
 
         Iterator<? extends Property> properties = super.properties(propertyKeys);
-        return TruenoHelper.asStream(properties).map(p -> (VertexProperty<V>)p).iterator();
+
+//        System.out.println("properties 1 --> " + properties);
+//        VertexProperty<V> prop = (VertexProperty<V>)properties;
+//        System.out.println("properties 2 --> " + prop);
+
+        return TruenoHelper.asStream(properties).map(p -> (VertexProperty<V>)new TruenoVertexProperty<V>((TruenoVertex)p.element(), p.key(), (V)p.value() )).iterator();
     }
 
     @Override
     public org.trueno.driver.lib.core.data_structures.Vertex getBaseVertex() {
-        return (org.trueno.driver.lib.core.data_structures.Vertex)this.getBaseElement();
+        return new org.trueno.driver.lib.core.data_structures.Vertex (this.getBaseElement());
+//        return (org.trueno.driver.lib.core.data_structures.Vertex)this.getBaseElement();
     }
+
+    // FIXME: There should be an addEdge, connectTo or something similar in Vertex, not in Graph.
 }

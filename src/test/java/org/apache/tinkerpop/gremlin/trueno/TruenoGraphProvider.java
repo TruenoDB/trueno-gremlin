@@ -33,6 +33,9 @@ public class TruenoGraphProvider extends AbstractGraphProvider {
                 String.valueOf(Math.abs(TestHelper.cleanPathSegment(test.getSimpleName().toLowerCase()).hashCode())) + "_" +
                 String.valueOf(Math.abs(TestHelper.cleanPathSegment(testMethodName.toLowerCase()).hashCode()))
             );
+
+        //System.out.println("----------------- " + name);
+
         return new HashMap<String, Object>() {{
             put(Graph.GRAPH, TruenoGraph.class.getName());
             put(TruenoGraph.CONFIG_DATABASE, name);

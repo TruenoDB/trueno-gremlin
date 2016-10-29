@@ -17,7 +17,7 @@ public final class TruenoGremlinPlugin extends AbstractGremlinPlugin {
 
     @Override
     public String getName() {
-        return "trueno";
+        return "trueno.truenograph";
     }
 
     @Override

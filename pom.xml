@@ -38,10 +38,6 @@ limitations under the License.
             <version>${project.version}</version>
         </dependency>
 
-        <!--
-          trueno-java-driver dependency
-          TODO: change to maven repository when the java-driver is stable
-        -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
@@ -54,6 +50,7 @@ limitations under the License.
             <version>RELEASE</version>
         </dependency>
 
+        <!-- TODO: change to maven repository when the java-driver is stable -->
         <dependency>
             <groupId>org.trueno.driver</groupId>
             <artifactId>trueno-java-driver</artifactId>
@@ -62,13 +59,13 @@ limitations under the License.
             <systemPath>${basedir}/lib/trueno-java-driver-0.1.0.jar</systemPath>
         </dependency>
 
-        <!-- Testing. Gremlin Test Suite -->
-        <dependency>
-            <groupId>org.apache.tinkerpop</groupId>
-            <artifactId>gremlin-test</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
+        <!-- Gremlin Test Suite -->
+        <!--<dependency>-->
+            <!--<groupId>org.apache.tinkerpop</groupId>-->
+            <!--<artifactId>gremlin-test</artifactId>-->
+            <!--<version>${project.version}</version>-->
+            <!--<scope>test</scope>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
@@ -103,13 +100,32 @@ limitations under the License.
                     <target>1.8</target>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <skipTests>true</skipTests>
+                    <forkCount>1</forkCount>
+                    <reuseForks>false</reuseForks>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <configuration>
+                    <skipTests>true</skipTests>
+                    <forkCount>1</forkCount>
+                    <reuseForks>false</reuseForks>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 
     <profiles>
         <profile>
             <!--
-              Use this profile if you want the test suite to run.
+              Use this profile if you want gremlin test suite to run.
             -->
             <id>release</id>
             <build>

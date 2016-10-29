@@ -6,6 +6,7 @@ import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedEdge;
+import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 import org.json.JSONObject;
 
 import org.trueno.driver.lib.core.Trueno;
@@ -28,8 +29,26 @@ public class TruenoEdge extends TruenoElement implements Edge, WrappedEdge<org.t
     }
 
     @Override
+    public Vertex outVertex() {
+        return new TruenoVertex(TruenoHelper.edgeStart(this), this.graph);
+    }
+
+    @Override
+    public Vertex inVertex() {
+        return new TruenoVertex(TruenoHelper.edgeEnd(this), this.graph);
+    }
+
+    @Override
     public Iterator<Vertex> vertices(Direction direction) {
-        return null;
+
+        switch (direction) {
+            case OUT:
+                return IteratorUtils.of(this.outVertex());
+            case IN:
+                return IteratorUtils.of(this.inVertex());
+            default:
+                return IteratorUtils.of(this.outVertex(), this.inVertex());
+        }
     }
 
 //    @Override

@@ -46,17 +46,30 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     /* Config settings for standalone installation */
     public static final String CONFIG_DEFAULT_DB = "trueno";
 
-    public static final String CONFIG_SERVER   = "gremlin.trueno.storage.server";
-    public static final String CONFIG_PORT     = "gremlin.trueno.storage.port";
-    public static final String CONFIG_DATABASE = "gremlin.trueno.storage.database";
-    public static final String CONFIG_CONF     = "gremlin.trueno.storage.conf";
-    static Semaphore mutex = new Semaphore(0);
+    public static final String CONFIG_SERVER   = "trueno.storage.server";
+    public static final String CONFIG_PORT     = "trueno.storage.port";
+    public static final String CONFIG_DATABASE = "trueno.storage.database";
+    public static final String CONFIG_CONF     = "trueno.storage.conf";
+//    static Semaphore mutex = new Semaphore(0);
 
     /* Graph configuration */
     protected BaseConfiguration configuration = new BaseConfiguration();
 
     /* Database features */
     protected Features features = new TruenoFeatures();
+
+    /**
+     * Sets the socket identifier for the connection.
+     *
+     * @param socket the socket string (identifier)
+     */
+    protected void setSocketId(String socket) {
+        this.socketId = socket;
+    }
+
+    protected String getSocketId() {
+        return this.socketId;
+    }
 
     /**
      * Initialize {@link TruenoGraph} instance.
@@ -67,9 +80,9 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     private void initialize(final Trueno graphAPI, final Configuration configuration) {
         /* Init GraphAPI and Trueno 'raw' Graph object */
         this.graphAPI  = graphAPI;
-        this.baseGraph = graphAPI.Graph(configuration.getString(CONFIG_DATABASE));
+//        this.baseGraph = graphAPI.Graph(configuration.getString(CONFIG_DATABASE));
         /* Open database and get an instance (or create it) from the database */
-        TruenoHelper.getInstace(this);
+        TruenoHelper.getInstance(this);
     }
 
     protected TruenoGraph(final Trueno graphAPI, final Configuration configuration) {
@@ -80,15 +93,7 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
         this.configuration.copy(configuration);
         /* Create an instance of */
         Trueno trueno = new Trueno(configuration.getString(CONFIG_SERVER), configuration.getInt(CONFIG_PORT));
-        /* Establish connection */
-        trueno.connect((socket)->{
-            socketId = socket.id();
-            System.out.println("[" + this.socketId + "] connected:  " + configuration.getString(CONFIG_DATABASE));
-        }, (socket)->{
-            String id = this.socketId;
-            System.out.println("[" + id + "] disconnected");
-        });
-        // TODO: Create a TruenoFactory to create an instance from the config file (java-driver)
+        /* Establish connection and get and instance of the database */
         this.initialize(trueno, configuration);
     }
 
@@ -103,7 +108,7 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
 
         /* Check required configuration parameters */
         if (!configuration.containsKey(CONFIG_SERVER))
-            throw new IllegalArgumentException(String.format("Trueno configuration requires that %s to be set", CONFIG_SERVER));
+            throw new IllegalArgumentException(String.format("Trueno configuration requires %s to be set", CONFIG_SERVER));
 
         return new TruenoGraph(configuration);
     }
@@ -178,7 +183,6 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     @Override
     public Iterator<Vertex> vertices(Object... vertexIds) {
         // TODO: Move basic functionality to TruenoHelper
-
         final List<Vertex> vertices = new ArrayList<>();
 
         /* No predicate (retrieve all nodes) */
@@ -219,7 +223,43 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
 
     @Override
     public Iterator<Edge> edges(Object... edgeIds) {
-        return null;
+        // TODO: Move basic functionality to TruenoHelper
+        final List<Edge> edges = new ArrayList<>();
+
+        /* No predicate (retrieve all nodes) */
+        if (0 == edgeIds.length) {
+            System.out.println("edges(): no-filter");
+            try {
+                return TruenoHelper.getAllEdges(this);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        } else {
+            System.out.println("edges(): filter");
+            ElementHelper.validateMixedElementIds(Vertex.class, edgeIds);
+            return Stream.of(edgeIds)
+//                    .map(id -> {
+//                        if (id instanceof Number) {
+//                            return ((Number) id).longValue();
+//                        } else {
+//                            throw new IllegalArgumentException("Unknown vertex id type: " + id);
+//                        }
+//                    })
+                    .flatMap(id -> {
+                        try {
+                            return Stream.of(TruenoHelper.getEdge(this, id));
+                        } catch (final RuntimeException e) {
+                            if (TruenoHelper.isNotFound(e)) return Stream.empty();
+                            e.printStackTrace();
+                            throw e;
+                        } catch (final InterruptedException e) {
+                            e.printStackTrace();
+                            return Stream.empty();
+                        }
+                    })
+                    .map(node -> (Edge) new TruenoEdge(node, this)).iterator();
+        }
+        return edges.iterator();
     }
 
     @Override
