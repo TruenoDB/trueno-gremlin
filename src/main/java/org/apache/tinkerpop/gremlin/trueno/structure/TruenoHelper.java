@@ -99,7 +99,7 @@ public class TruenoHelper {
         graph.getBaseGraph().fetch("v", filter)
             .then(result -> {
                 queue.add(result);
-                System.out.println("[getVertex] Filtering: " + filter + " id: " + id + " -->" + result);
+                System.out.println("[getVertex] Filtering: " + filter.toString() + " id: " + id + " -->" + result);
             }).fail(ex -> {
             throw new Error ("Something bad happened: " + ex);
         });
@@ -201,14 +201,14 @@ public class TruenoHelper {
             System.out.println("filter --> " + filter);
             return vertex.graph.baseGraph.filter().regexp(field, filter);
         }
-        System.out.println("filter --> " + null);
+        System.out.println("filter --> null");
         return null;
     }
 
     public static Iterator<TruenoVertex> getVertices(final TruenoVertex vertex, final Direction direction, final String... edgeLabels) throws InterruptedException {
         final BlockingQueue<JSONArray> queue = new ArrayBlockingQueue<JSONArray>(2);
 
-        System.out.println("getVertices()");
+        System.out.println("getVertices() :: " + direction + " :: " + ((edgeLabels.length > 0)?edgeLabels[0]:"null"));
         Filter filter = buildFilter(vertex, "label", edgeLabels);
         if (direction.equals(Direction.IN) || direction.equals(Direction.BOTH)) {
             vertex.getBaseVertex().in("v", filter)
@@ -231,7 +231,7 @@ public class TruenoHelper {
                     });
         }
 
-
+        // FIXME: If the fetch returns an empty set breaks the execution
         // FIXME: eliminate duplicates
         return IteratorUtils
                 .stream(IteratorUtils.concat(queue.take().iterator(), queue.take().iterator()))
@@ -241,7 +241,7 @@ public class TruenoHelper {
     public static Iterator<TruenoEdge> getEdges(final TruenoVertex vertex, final Direction direction, final String... edgeLabels) throws InterruptedException {
         final BlockingQueue<JSONArray> queue = new ArrayBlockingQueue<JSONArray>(2);
 
-        System.out.println("getEdges()");
+        System.out.println("getEdges() :: " + direction + " :: " + ((edgeLabels.length > 0)?edgeLabels[0]:"null"));
         Filter filter = buildFilter(vertex, "label", edgeLabels);
         if (direction.equals(Direction.IN) || direction.equals(Direction.BOTH)) {
             vertex.getBaseVertex().in("e", filter)

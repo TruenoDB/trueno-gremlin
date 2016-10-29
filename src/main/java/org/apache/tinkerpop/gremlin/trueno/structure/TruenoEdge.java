@@ -87,6 +87,7 @@ public class TruenoEdge extends TruenoElement implements Edge, WrappedEdge<org.t
 
     @Override
     public org.trueno.driver.lib.core.data_structures.Edge getBaseEdge() {
-        return (org.trueno.driver.lib.core.data_structures.Edge)this.getBaseElement();
+        return new org.trueno.driver.lib.core.data_structures.Edge (this.getBaseElement(), this.graph.getBaseGraph());
+//        return (org.trueno.driver.lib.core.data_structures.Edge)this.getBaseElement();
     }
 }

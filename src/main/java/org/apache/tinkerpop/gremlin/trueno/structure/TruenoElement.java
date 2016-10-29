@@ -36,7 +36,7 @@ public abstract class TruenoElement implements Element, WrappedElement<Component
         if (obj == null)
             throw  new IllegalArgumentException("Component must not be nul!");
 
-        System.out.println("TruenoElement() --> " + obj);
+//        System.out.println("TruenoElement() --> " + obj);
         Component baseElement = new Component(obj);
 //        System.out.println("TruenoElement() --> " + obj);
 
