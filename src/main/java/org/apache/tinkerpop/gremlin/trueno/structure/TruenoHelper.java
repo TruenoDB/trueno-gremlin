@@ -219,6 +219,9 @@ public class TruenoHelper {
                     .fail((ex) -> {
                         throw new Error ("Something bad happened: " + ex);
                     });
+        } else {
+            /* add an empty array */
+            queue.add(new JSONArray());
         }
 
         if (direction.equals(Direction.OUT) || direction.equals(Direction.BOTH)) {
@@ -229,6 +232,9 @@ public class TruenoHelper {
                     }).fail((ex) -> {
                         throw new Error ("Something bad happened: " + ex);
                     });
+        } else {
+            /* add an empty array */
+            queue.add(new JSONArray());
         }
 
         // FIXME: If the fetch returns an empty set breaks the execution
@@ -252,6 +258,8 @@ public class TruenoHelper {
                     .fail((ex) -> {
                         throw new Error ("Something bad happened: " + ex);
                     });
+        } else {
+            queue.add(new JSONArray());
         }
 
         if (direction.equals(Direction.OUT) || direction.equals(Direction.BOTH)) {
@@ -262,6 +270,8 @@ public class TruenoHelper {
                     }).fail((ex) -> {
                 throw new Error ("Something bad happened: " + ex);
             });
+        } else {
+            queue.add(new JSONArray());
         }
 
 

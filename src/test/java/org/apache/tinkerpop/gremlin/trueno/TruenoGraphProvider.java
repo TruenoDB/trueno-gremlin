@@ -4,6 +4,8 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.AbstractGraphProvider;
 import org.apache.tinkerpop.gremlin.LoadGraphWith;
 import org.apache.tinkerpop.gremlin.TestHelper;
+import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.trueno.structure.*;
 
@@ -11,6 +13,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+
+import org.trueno.driver.lib.core.utils.Pair;
 
 /**
  * @author Edgardo Barsallo Yi (ebarsallo)
@@ -21,6 +25,7 @@ public class TruenoGraphProvider extends AbstractGraphProvider {
         add(TruenoEdge.class);
         add(TruenoElement.class);
         add(TruenoGraph.class);
+        add(TruenoGraphVariables.class);
         add(TruenoProperty.class);
         add(TruenoVertex.class);
         add(TruenoVertexProperty.class);

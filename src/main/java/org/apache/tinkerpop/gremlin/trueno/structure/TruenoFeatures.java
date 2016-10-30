@@ -37,7 +37,7 @@ import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
             return StringFactory.featureString(this);
         }
 
-    /**
+        /**
          * Features specific to a operations of a Trueno Graph
          * {@link org.apache.tinkerpop.gremlin.trueno.structure.TruenoGraph}.
          */

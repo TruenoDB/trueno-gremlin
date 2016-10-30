@@ -66,7 +66,6 @@ public class TruenoEdge extends TruenoElement implements Edge, WrappedEdge<org.t
 //        return null;
 //    }
 
-    // TODO: Probably will be convenient to filter 'label' property
 //    @Override
 //    public <V> Property<V> property(String key, V value) {
 //        return this.property(key, value);

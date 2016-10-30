@@ -17,6 +17,7 @@ import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedGraph;
 
 import org.trueno.driver.lib.core.Trueno;
 import org.trueno.driver.lib.core.data_structures.Component;
+import org.trueno.driver.lib.core.utils.Pair;
 import sun.awt.Mutex;
 
 import java.util.ArrayList;
@@ -39,6 +40,7 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     protected Trueno graphAPI;
 
     private String socketId;
+    private TruenoGraphVariables truenoGraphVariables;
 
     /* Graph Component */
     protected org.trueno.driver.lib.core.data_structures.Graph baseGraph;
@@ -50,7 +52,6 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     public static final String CONFIG_PORT     = "trueno.storage.port";
     public static final String CONFIG_DATABASE = "trueno.storage.database";
     public static final String CONFIG_CONF     = "trueno.storage.conf";
-//    static Semaphore mutex = new Semaphore(0);
 
     /* Graph configuration */
     protected BaseConfiguration configuration = new BaseConfiguration();
@@ -80,9 +81,10 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     private void initialize(final Trueno graphAPI, final Configuration configuration) {
         /* Init GraphAPI and Trueno 'raw' Graph object */
         this.graphAPI  = graphAPI;
-//        this.baseGraph = graphAPI.Graph(configuration.getString(CONFIG_DATABASE));
         /* Open database and get an instance (or create it) from the database */
         TruenoHelper.getInstance(this);
+        /* Initialize graph */
+        this.truenoGraphVariables = new TruenoGraphVariables(this);
     }
 
     protected TruenoGraph(final Trueno graphAPI, final Configuration configuration) {
@@ -197,13 +199,17 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
             System.out.println("vertices(): filter");
             ElementHelper.validateMixedElementIds(Vertex.class, vertexIds);
             return Stream.of(vertexIds)
-//                    .map(id -> {
-//                        if (id instanceof Number) {
-//                            return ((Number) id).longValue();
-//                        } else {
-//                            throw new IllegalArgumentException("Unknown vertex id type: " + id);
-//                        }
-//                    })
+                    .map(id -> {
+                        if (id instanceof Number) {
+                            return ((Number) id).longValue();
+                        } else if (id instanceof String) {
+                            return Long.valueOf(id.toString());
+                        } else if (id instanceof Vertex) {
+                            return ((Vertex) id).id();
+                        } else {
+                            throw new IllegalArgumentException("Unknown vertex id type: " + id);
+                        }
+                    })
                     .flatMap(id -> {
                         try {
                             return Stream.of(TruenoHelper.getVertex(this, id));
@@ -238,13 +244,16 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
             System.out.println("edges(): filter");
             ElementHelper.validateMixedElementIds(Vertex.class, edgeIds);
             return Stream.of(edgeIds)
-//                    .map(id -> {
-//                        if (id instanceof Number) {
-//                            return ((Number) id).longValue();
-//                        } else {
-//                            throw new IllegalArgumentException("Unknown vertex id type: " + id);
-//                        }
-//                    })
+                    .map(id -> {
+                        // TODO: Temporaly, the edge only support an id of type Pair
+                        if (id instanceof Pair) {
+                            return id;
+                        } else if (id instanceof Edge) {
+                            return ((Edge) id).id();
+                        }else {
+                            throw new IllegalArgumentException("Unknown vertex id type: " + id);
+                        }
+                    })
                     .flatMap(id -> {
                         try {
                             return Stream.of(TruenoHelper.getEdge(this, id));
@@ -275,12 +284,15 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     @Override
     public void close() throws Exception {
         /* disconnect socket */
-        this.getGraphAPI().disconnect();
+        // FIXME: After implementation of singleton connection (getInstance) there's no access to the trueno api
+        // directly
+        if (this.getGraphAPI() != null)
+            this.getGraphAPI().disconnect();
     }
 
     @Override
     public Variables variables() {
-        throw new NotImplementedException();
+        return this.truenoGraphVariables;
     }
 
     @Override
