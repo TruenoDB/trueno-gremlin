@@ -19,37 +19,32 @@ limitations under the License.
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.trueno.gremlin</groupId>
+    <groupId>org.trueno</groupId>
     <artifactId>trueno-gremlin</artifactId>
     <version>3.2.1</version>
     <name>Apache Tinkerpop :: Trueno Gremlin</name>
 
     <dependencies>
-
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-core</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-groovy</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20160212</version>
         </dependency>
-
         <dependency>
             <groupId>org.jdeferred</groupId>
             <artifactId>jdeferred-core</artifactId>
             <version>RELEASE</version>
         </dependency>
-
         <!-- TODO: change to maven repository when the java-driver is stable -->
         <dependency>
             <groupId>org.trueno.driver</groupId>
@@ -58,22 +53,19 @@ limitations under the License.
             <scope>system</scope>
             <systemPath>${basedir}/lib/trueno-java-driver-0.1.0.jar</systemPath>
         </dependency>
-
         <!-- Gremlin Test Suite -->
-        <!--<dependency>-->
-            <!--<groupId>org.apache.tinkerpop</groupId>-->
-            <!--<artifactId>gremlin-test</artifactId>-->
-            <!--<version>${project.version}</version>-->
-            <!--<scope>test</scope>-->
-        <!--</dependency>-->
-
+        <dependency>
+            <groupId>org.apache.tinkerpop</groupId>
+            <artifactId>gremlin-test</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.apache.tinkerpop</groupId>
             <artifactId>gremlin-groovy-test</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -103,23 +95,71 @@ limitations under the License.
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.17</version>
                 <configuration>
-                    <skipTests>false</skipTests>
-                    <forkCount>1</forkCount>
-                    <reuseForks>false</reuseForks>
+                    <skipTests>true</skipTests>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <configuration>
-                    <skipTests>false</skipTests>
-                    <forkCount>1</forkCount>
-                    <reuseForks>false</reuseForks>
+                    <skipTests>true</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <version>1.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>addSources</goal>
+                            <goal>addTestSources</goal>
+                            <goal>generateStubs</goal>
+                            <goal>compile</goal>
+                            <goal>testGenerateStubs</goal>
+                            <goal>testCompile</goal>
+                            <goal>removeStubs</goal>
+                            <goal>removeTestStubs</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <invokeDynamic>true</invokeDynamic>
                 </configuration>
             </plugin>
         </plugins>
+
+        <!--<plugins>-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-compiler-plugin</artifactId>-->
+                <!--<version>3.1</version>-->
+                <!--<configuration>-->
+                    <!--<source>1.8</source>-->
+                    <!--<target>1.8</target>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-surefire-plugin</artifactId>-->
+                <!--<version>2.17</version>-->
+                <!--<configuration>-->
+                    <!--<skipTests>true</skipTests>-->
+                    <!--<forkCount>1</forkCount>-->
+                    <!--<reuseForks>false</reuseForks>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+            <!--<plugin>-->
+                <!--<groupId>org.apache.maven.plugins</groupId>-->
+                <!--<artifactId>maven-failsafe-plugin</artifactId>-->
+                <!--<configuration>-->
+                    <!--<skipTests>true</skipTests>-->
+                    <!--<forkCount>1</forkCount>-->
+                    <!--<reuseForks>false</reuseForks>-->
+                <!--</configuration>-->
+            <!--</plugin>-->
+        <!--</plugins>-->
     </build>
 
     <profiles>

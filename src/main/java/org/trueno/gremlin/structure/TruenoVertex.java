@@ -1,4 +1,4 @@
-package org.apache.tinkerpop.gremlin.trueno.structure;
+package org.trueno.gremlin.structure;
 
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.Edge;

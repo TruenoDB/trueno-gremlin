@@ -1,6 +1,5 @@
-package org.apache.tinkerpop.gremlin.trueno.structure;
+package org.trueno.gremlin.structure;
 
-import org.apache.log4j.lf5.util.StreamUtils;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
@@ -9,11 +8,9 @@ import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedEdge;
 import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 import org.json.JSONObject;
 
-import org.trueno.driver.lib.core.Trueno;
 import org.trueno.driver.lib.core.data_structures.Component;
 
 import java.util.Iterator;
-import java.util.stream.StreamSupport;
 
 /**
  * @author Edgardo Barsallo Yi (ebarsallo)

@@ -1,4 +1,4 @@
-package org.apache.tinkerpop.gremlin.trueno.structure;
+package org.trueno.gremlin.structure;
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
@@ -7,7 +7,6 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.NotImplementedException;
 
 import org.apache.tinkerpop.gremlin.process.computer.GraphComputer;
-import org.apache.tinkerpop.gremlin.process.traversal.NumberHelper;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Transaction;
@@ -16,17 +15,12 @@ import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedGraph;
 
 import org.trueno.driver.lib.core.Trueno;
-import org.trueno.driver.lib.core.data_structures.Component;
 import org.trueno.driver.lib.core.utils.Pair;
-import sun.awt.Mutex;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 import java.util.stream.Stream;
-
-import static java.lang.Thread.sleep;
 
 
 /**
@@ -34,6 +28,7 @@ import static java.lang.Thread.sleep;
  */
 @Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_STANDARD)
 @Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_PERFORMANCE)
+@Graph.OptIn(Graph.OptIn.SUITE_GROOVY_ENVIRONMENT)
 public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.core.data_structures.Graph> {
 
     /* Trueno Graph API */

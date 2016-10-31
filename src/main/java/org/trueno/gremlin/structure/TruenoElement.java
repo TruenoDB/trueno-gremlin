@@ -1,9 +1,8 @@
-package org.apache.tinkerpop.gremlin.trueno.structure;
+package org.trueno.gremlin.structure;
 
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Property;
-import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 
 import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedElement;
@@ -12,8 +11,6 @@ import org.trueno.driver.lib.core.data_structures.Component;
 import org.json.JSONObject;
 
 import java.util.Iterator;
-
-import static org.apache.tinkerpop.gremlin.structure.Column.keys;
 
 /**
  * @author Edgardo Barsallo Yi (ebarsallo)

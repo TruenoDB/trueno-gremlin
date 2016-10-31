@@ -1,4 +1,4 @@
-package org.apache.tinkerpop.gremlin.trueno.structure;
+package org.trueno.gremlin.structure;
 
 import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Property;

@@ -1,30 +1,24 @@
-package org.apache.tinkerpop.gremlin.trueno.structure;
+package org.trueno.gremlin.structure;
 
 import org.apache.commons.configuration.ConfigurationConverter;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
-import org.jdeferred.DoneFilter;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.trueno.driver.lib.core.Trueno;
 import org.trueno.driver.lib.core.TruenoFactory;
-import org.trueno.driver.lib.core.data_structures.Component;
 import org.trueno.driver.lib.core.data_structures.Filter;
 import org.trueno.driver.lib.core.utils.Pair;
 
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.Semaphore;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
-
-import static org.apache.tinkerpop.gremlin.trueno.structure.TruenoGraph.CONFIG_DATABASE;
 
 // TODO: connection using a singleton pattern
 // TODO: implement a private forceSync in TruenoGraph, to force that all methods behave as sync
@@ -54,42 +48,6 @@ public class TruenoHelper {
                 throw new Error ("Something bad happened: " + ex);
             });
     }
-
-//    public static void getInstace(final TruenoGraph graph) {
-//        final BlockingQueue<Integer> queue = new ArrayBlockingQueue<>(1);
-//
-//        /* Establish connection */
-//        Trueno trueno = graph.getGraphAPI();
-//        trueno.connect(
-//                /* on Connect */
-//                (socket) -> {
-//                    String id = socket.id();
-//                    graph.setSocketId(id);
-//                    System.out.println("[" + id + "] connected:  " + graph.configuration.getString(CONFIG_DATABASE));
-//
-//                    /* Create or Open an database instance */
-//                    graph.baseGraph = trueno.Graph(graph.configuration.getString(CONFIG_DATABASE));
-//                    graph.getBaseGraph().open()
-//                        .then((result) -> {
-//                            System.out.println("open good!");
-//                            queue.add(new Integer(1));
-//                        }).fail((ex) -> {
-//                            throw new Error ("Something bad happened: " + ex);
-//                        });
-//
-//                },
-//                /* on Disconnect */
-//                (socket) -> {
-//                    System.out.println("[" + socket.id() + "] disconnected");
-//                });
-//
-//        /* Block the execution until the instance is got */
-//        try {
-//            queue.take();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//    }
 
     // FIXME: This could be just one function (with argument edge or vertex)
     public static JSONObject getVertex(final TruenoGraph graph, Object id) throws InterruptedException {

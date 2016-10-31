@@ -1,8 +1,10 @@
-package org.apache.tinkerpop.gremlin.trueno.structure;
+package org.trueno.gremlin.structure;
 
 import org.apache.tinkerpop.gremlin.GraphProviderClass;
 import org.apache.tinkerpop.gremlin.structure.StructureStandardSuite;
-import org.apache.tinkerpop.gremlin.trueno.TruenoGraphProvider;
+
+import org.trueno.gremlin.TruenoGraphProvider;
+
 import org.junit.runner.RunWith;
 
 /**

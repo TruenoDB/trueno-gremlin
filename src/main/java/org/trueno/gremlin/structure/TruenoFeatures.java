@@ -1,4 +1,4 @@
-package org.apache.tinkerpop.gremlin.trueno.structure;
+package org.trueno.gremlin.structure;
 
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
@@ -39,7 +39,7 @@ import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
 
         /**
          * Features specific to a operations of a Trueno Graph
-         * {@link org.apache.tinkerpop.gremlin.trueno.structure.TruenoGraph}.
+         * {@link org.trueno.gremlin.structure.TruenoGraph}.
          */
         public class TruenoGraphFeatures implements GraphFeatures {
 
@@ -80,7 +80,7 @@ import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
         }
 
         /**
-         * Features that are related to Vertex {@link org.apache.tinkerpop.gremlin.trueno.structure.TruenoVertex}
+         * Features that are related to Vertex {@link TruenoVertex}
          * operations and supported by Trueno.
          */
         public class TruenoVertexFeatures implements VertexFeatures {

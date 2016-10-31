@@ -1,12 +1,10 @@
-package org.apache.tinkerpop.gremlin.trueno.structure;
+package org.trueno.gremlin.structure;
 
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.util.GraphVariableHelper;
 import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
-import org.trueno.driver.lib.core.Trueno;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Graph variables are a set of key/value pairs associated with the graph. Variables are stored as properties on

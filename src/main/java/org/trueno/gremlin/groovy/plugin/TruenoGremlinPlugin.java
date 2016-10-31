@@ -1,7 +1,7 @@
-package org.apache.tinkerpop.gremlin.trueno.groovy.plugin;
+package org.trueno.gremlin.groovy.plugin;
 
 import org.apache.tinkerpop.gremlin.groovy.plugin.*;
-import org.apache.tinkerpop.gremlin.trueno.structure.TruenoGraph;
+import org.trueno.gremlin.structure.TruenoGraph;
 
 import java.util.HashSet;
 import java.util.Set;

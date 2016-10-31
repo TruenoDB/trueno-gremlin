@@ -1,20 +1,17 @@
-package org.apache.tinkerpop.gremlin.trueno;
+package org.trueno.gremlin;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.tinkerpop.gremlin.AbstractGraphProvider;
 import org.apache.tinkerpop.gremlin.LoadGraphWith;
 import org.apache.tinkerpop.gremlin.TestHelper;
-import org.apache.tinkerpop.gremlin.structure.Edge;
-import org.apache.tinkerpop.gremlin.structure.Element;
 import org.apache.tinkerpop.gremlin.structure.Graph;
-import org.apache.tinkerpop.gremlin.trueno.structure.*;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.trueno.driver.lib.core.utils.Pair;
+import org.trueno.gremlin.structure.*;
 
 /**
  * @author Edgardo Barsallo Yi (ebarsallo)
@@ -38,8 +35,6 @@ public class TruenoGraphProvider extends AbstractGraphProvider {
                 String.valueOf(Math.abs(TestHelper.cleanPathSegment(test.getSimpleName().toLowerCase()).hashCode())) + "_" +
                 String.valueOf(Math.abs(TestHelper.cleanPathSegment(testMethodName.toLowerCase()).hashCode()))
             );
-
-        //System.out.println("----------------- " + name);
 
         return new HashMap<String, Object>() {{
             put(Graph.GRAPH, TruenoGraph.class.getName());

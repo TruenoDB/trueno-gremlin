@@ -1,14 +1,14 @@
-package org.apache.tinkerpop.gremlin.trueno.structure;
+package org.trueno.gremlin.structure;
 
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
+
 import org.trueno.driver.lib.core.data_structures.Component;
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 /**
  * @author @author Edgardo Barsallo Yi (ebarsallo)
