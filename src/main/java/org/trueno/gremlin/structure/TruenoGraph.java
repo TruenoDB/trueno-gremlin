@@ -162,7 +162,7 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
         }
         ElementHelper.attachProperties(vertex, keyValues);
         vertex.getBaseVertex().setId(ElementHelper.getIdValue(keyValues).get());
-        System.out.println("addVertex --> " + vertex.getBaseVertex());
+//        System.out.println("addVertex --> " + vertex.getBaseVertex());
         TruenoHelper.persist(vertex);
         return vertex;
     }
@@ -184,14 +184,12 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
 
         /* No predicate (retrieve all nodes) */
         if (0 == vertexIds.length) {
-            System.out.println("vertices(): no-filter");
             try {
                 return TruenoHelper.getAllVertices(this);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("vertices(): filter");
             ElementHelper.validateMixedElementIds(Vertex.class, vertexIds);
             return Stream.of(vertexIds)
                     .map(id -> {
@@ -229,14 +227,12 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
 
         /* No predicate (retrieve all nodes) */
         if (0 == edgeIds.length) {
-            System.out.println("edges(): no-filter");
             try {
                 return TruenoHelper.getAllEdges(this);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         } else {
-            System.out.println("edges(): filter");
             ElementHelper.validateMixedElementIds(Vertex.class, edgeIds);
             return Stream.of(edgeIds)
                     .map(id -> {

@@ -10,7 +10,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import org.trueno.driver.lib.core.TruenoFactory;
+import org.trueno.driver.lib.core.data_structures.ComponentType;
 import org.trueno.driver.lib.core.data_structures.Filter;
 import org.trueno.driver.lib.core.utils.Pair;
 
@@ -43,9 +45,9 @@ public class TruenoHelper {
         /* Open trueno graph for operations */
         graph.getBaseGraph().open()
             .then((result) -> {
-                System.out.println("open good!");
+                logger.trace("connected to: {}", config.get(TruenoGraph.CONFIG_DATABASE));
             }).fail((ex) -> {
-                throw new Error ("Something bad happened: " + ex);
+                logger.error("{}", ex);
             });
     }
 
@@ -54,10 +56,10 @@ public class TruenoHelper {
         final BlockingQueue<JSONArray> queue = new ArrayBlockingQueue<JSONArray>(1);
 
         Filter filter = graph.getBaseGraph().filter().term("_id", id);
-        graph.getBaseGraph().fetch("v", filter)
+        graph.getBaseGraph().fetch(ComponentType.VERTEX, filter)
             .then(result -> {
                 queue.add(result);
-                System.out.println("[getVertex] Filtering: " + filter.toString() + " id: " + id + " -->" + result);
+//                System.out.println("[getVertex] Filtering: " + filter.toString() + " id: " + id + " -->" + result);
             }).fail(ex -> {
             throw new Error ("Something bad happened: " + ex);
         });
@@ -78,8 +80,8 @@ public class TruenoHelper {
         // FIXME: Edge should have a surrogate identifier, not a compound identifier
         Pair edgeId = (Pair)id;
         Filter filter = graph.getBaseGraph().filter().term("source", edgeId.getFirst()).term("target", edgeId.getSecond());
-        System.out.println("getEdge: filtering --> " + filter);
-        graph.getBaseGraph().fetch("e", filter)
+//        System.out.println("getEdge: filtering --> " + filter);
+        graph.getBaseGraph().fetch(ComponentType.EDGE, filter)
                 .then(result -> {
                     queue.add(result);
                     //System.out.println("Filtering: " + filter + " id: " + id + " -->" + result);
@@ -109,10 +111,10 @@ public class TruenoHelper {
     public static Iterator<Vertex> getAllVertices(final TruenoGraph graph) throws InterruptedException {
         final BlockingQueue<JSONArray> queue = new ArrayBlockingQueue<JSONArray>(1);
 
-        graph.getBaseGraph().fetch("v")
+        graph.getBaseGraph().fetch(ComponentType.VERTEX)
             .then(result -> {
                 queue.add(result);
-                System.out.println("getAllVertices --> " + result);
+//                System.out.println("getAllVertices --> " + result);
             })
             .fail((ex) -> {
                 throw new Error ("Something bad happened: " + ex);
@@ -130,8 +132,8 @@ public class TruenoHelper {
     public static Iterator<Edge> getAllEdges(final TruenoGraph graph) throws InterruptedException {
         final BlockingQueue<JSONArray> queue = new ArrayBlockingQueue<JSONArray>(1);
 
-        System.out.println("getAllEdges()");
-        graph.getBaseGraph().fetch("e")
+//        System.out.println("getAllEdges()");
+        graph.getBaseGraph().fetch(ComponentType.EDGE)
                 .then(result -> {
                     queue.add(result);
                 })
@@ -140,8 +142,8 @@ public class TruenoHelper {
                 });
 
         JSONArray list = queue.take();
-        System.out.println("getAllEdges() ---> " + list.length());
-        System.out.println("getAllEdges() ---> " + list);
+//        System.out.println("getAllEdges() ---> " + list.length());
+//        System.out.println("getAllEdges() ---> " + list);
 
         return IteratorUtils
                 .stream(list.iterator())
@@ -153,26 +155,26 @@ public class TruenoHelper {
         if (edgeLabels.length > 0) {
             String filter = "";
             for (int i=0; i<edgeLabels.length; i++) {
-                if (i>1) filter += "|";
+                if (i>0) filter += "|";
                 filter += edgeLabels[i];
             }
-            System.out.println("filter --> " + filter);
+//            System.out.println("filter --> " + filter);
             return vertex.graph.baseGraph.filter().regexp(field, filter);
         }
-        System.out.println("filter --> null");
+//        System.out.println("filter --> null");
         return null;
     }
 
     public static Iterator<TruenoVertex> getVertices(final TruenoVertex vertex, final Direction direction, final String... edgeLabels) throws InterruptedException {
         final BlockingQueue<JSONArray> queue = new ArrayBlockingQueue<JSONArray>(2);
 
-        System.out.println("getVertices() :: " + direction + " :: " + ((edgeLabels.length > 0)?edgeLabels[0]:"null"));
+//        System.out.println("getVertices() :: " + direction + " :: " + ((edgeLabels.length > 0)?edgeLabels[0]:"null"));
         Filter filter = buildFilter(vertex, "label", edgeLabels);
         if (direction.equals(Direction.IN) || direction.equals(Direction.BOTH)) {
-            vertex.getBaseVertex().in("v", filter)
+            vertex.getBaseVertex().in(ComponentType.VERTEX, null, filter)
                     .then((v) -> {
                         queue.add(v);
-                        System.out.println("getVertices() IN  --> " + v);
+//                        System.out.println("getVertices() IN  --> " + v);
                     })
                     .fail((ex) -> {
                         throw new Error ("Something bad happened: " + ex);
@@ -183,10 +185,10 @@ public class TruenoHelper {
         }
 
         if (direction.equals(Direction.OUT) || direction.equals(Direction.BOTH)) {
-            vertex.getBaseVertex().out("v", filter)
+            vertex.getBaseVertex().out(ComponentType.VERTEX, null, filter)
                     .then((v) -> {
                         queue.add(v);
-                        System.out.println("getVertices() OUT --> " + v);
+//                        System.out.println("getVertices() OUT --> " + v);
                     }).fail((ex) -> {
                         throw new Error ("Something bad happened: " + ex);
                     });
@@ -205,13 +207,13 @@ public class TruenoHelper {
     public static Iterator<TruenoEdge> getEdges(final TruenoVertex vertex, final Direction direction, final String... edgeLabels) throws InterruptedException {
         final BlockingQueue<JSONArray> queue = new ArrayBlockingQueue<JSONArray>(2);
 
-        System.out.println("getEdges() :: " + direction + " :: " + ((edgeLabels.length > 0)?edgeLabels[0]:"null"));
+//        System.out.println("getEdges() :: " + direction + " :: " + ((edgeLabels.length > 0)?edgeLabels[0]:"null"));
         Filter filter = buildFilter(vertex, "label", edgeLabels);
         if (direction.equals(Direction.IN) || direction.equals(Direction.BOTH)) {
-            vertex.getBaseVertex().in("e", filter)
+            vertex.getBaseVertex().in(ComponentType.EDGE, filter, null)
                     .then((e) -> {
                         queue.add(e);
-                        System.out.println("getEdges() IN  --> " + e);
+//                        System.out.println("getEdges() IN  --> " + e);
                     })
                     .fail((ex) -> {
                         throw new Error ("Something bad happened: " + ex);
@@ -221,10 +223,10 @@ public class TruenoHelper {
         }
 
         if (direction.equals(Direction.OUT) || direction.equals(Direction.BOTH)) {
-            vertex.getBaseVertex().out("e", filter)
+            vertex.getBaseVertex().out(ComponentType.EDGE, filter, null)
                     .then((e) -> {
                         queue.add(e);
-                        System.out.println("getEdges() OUT --> " + e);
+//                        System.out.println("getEdges() OUT --> " + e);
                     }).fail((ex) -> {
                 throw new Error ("Something bad happened: " + ex);
             });
@@ -251,7 +253,7 @@ public class TruenoHelper {
     public static void persist(final TruenoElement element) {
 
         element.getBaseElement().persist().then((result) -> {
-            System.out.println("persist(): good!");
+//            System.out.println("persist(): good!");
         }).fail((ex) -> {
             throw new Error ("Something bad happened: " + ex);
         });
@@ -286,6 +288,7 @@ public class TruenoHelper {
     public static org.trueno.driver.lib.core.data_structures.Vertex edgeStart (final TruenoEdge edge) {
         org.trueno.driver.lib.core.data_structures.Vertex vertex = new org.trueno.driver.lib.core.data_structures.Vertex();
 
+        System.out.println("edges --> " + edge.getBaseElement());
         vertex.setId(edge.getBaseEdge().getSource());
 
         return vertex;
@@ -299,4 +302,7 @@ public class TruenoHelper {
 
         return vertex;
     }
+
+//    // String format
+//    public static String typeToString()
 }

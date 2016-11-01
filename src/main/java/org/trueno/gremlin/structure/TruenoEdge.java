@@ -23,6 +23,10 @@ public class TruenoEdge extends TruenoElement implements Edge, WrappedEdge<org.t
 
     public TruenoEdge(JSONObject object, TruenoGraph graph) {
         super(object, graph);
+//        System.out.println("TruenoEdge() --> " + object);
+        /* Setting specific edges properties */
+        this.getBaseElement().put("target", object.get("target"));
+        this.getBaseElement().put("source", object.get("source"));
     }
 
     @Override
@@ -81,6 +85,8 @@ public class TruenoEdge extends TruenoElement implements Edge, WrappedEdge<org.t
         return TruenoHelper.asStream(properties).map(p -> (Property<V>)p).iterator();
     }
 
+    // FIXME: instance a new Edge it's not the base practice, instead a casting should be used
+    // (but that will require to use interface and not inheritance)
     @Override
     public org.trueno.driver.lib.core.data_structures.Edge getBaseEdge() {
         return new org.trueno.driver.lib.core.data_structures.Edge (this.getBaseElement(), this.graph.getBaseGraph());

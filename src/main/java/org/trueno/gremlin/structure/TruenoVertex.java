@@ -79,7 +79,7 @@ public class TruenoVertex extends TruenoElement implements Vertex, WrappedVertex
     public Iterator<Edge> edges(Direction direction, String... edgeLabels) {
         // FIXME: Handler better this exception.
         try {
-            System.out.println("...edges");
+//            System.out.println("...edges");
             return (Iterator)TruenoHelper.getEdges(this, direction, edgeLabels);
         } catch (InterruptedException e) {
             e.printStackTrace();
