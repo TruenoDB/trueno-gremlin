@@ -30,11 +30,13 @@ public class TruenoEdge extends TruenoElement implements Edge, WrappedEdge<org.t
     }
 
     @Override
+    // FIXME: Actually this is not the best way, since he are returning a vertex with just the id.
     public Vertex outVertex() {
         return new TruenoVertex(TruenoHelper.edgeStart(this), this.graph);
     }
 
     @Override
+    // FIXME: Actually this is not the best way, since he are returning a vertex with just the id.
     public Vertex inVertex() {
         return new TruenoVertex(TruenoHelper.edgeEnd(this), this.graph);
     }

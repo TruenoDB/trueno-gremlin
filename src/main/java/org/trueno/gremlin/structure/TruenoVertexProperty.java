@@ -6,6 +6,8 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.trueno.driver.lib.core.data_structures.Component;
 
 import java.util.Iterator;
@@ -15,14 +17,18 @@ import java.util.Iterator;
  */
 public final class TruenoVertexProperty<V> extends TruenoProperty<V> implements VertexProperty<V> {
 
+    private static final Logger logger = LoggerFactory.getLogger(TruenoHelper.class);
     TruenoVertexProperty(final TruenoVertex vertex, final String key, final V value) {
         super(vertex, key, value);
     }
 
     @Override
     public Object id() {
+        logger.debug("{}", this.key);
+        logger.debug("{}", this.value);
+        System.out.println("**** " + this.key.hashCode() + " * " + this.value.hashCode());
         // FIXME. Using a similar technique than Neo4J plugin. Need for a better identifier.
-        return (long) (this.key.hashCode() + this.value.hashCode() + this.id().hashCode());
+        return (long) (this.key.hashCode() + this.value.hashCode());
     }
 
     @Override

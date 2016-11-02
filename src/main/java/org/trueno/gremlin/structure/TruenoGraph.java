@@ -17,6 +17,7 @@ import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedGraph;
 import org.trueno.driver.lib.core.Trueno;
 import org.trueno.driver.lib.core.utils.Pair;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -113,12 +114,28 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     /**
      * Open a new {@link TruenoGraph} instance from a configuration file.
      *
-     * @param filename the filename and its location.
+     * @param database the trueno database name.
      * @return a newly opened {@link TruenoGraph}
      * @throws ConfigurationException an Exception in case the file could not be opened.
      */
-    public static TruenoGraph open(final String filename) throws ConfigurationException {
-        return open(new PropertiesConfiguration(filename));
+    public static TruenoGraph open(final String database) throws ConfigurationException {
+        final Configuration config = new BaseConfiguration();
+        config.setProperty(CONFIG_SERVER, Trueno.DEFAULT_HOST);
+        config.setProperty(CONFIG_PORT, Trueno.DEFAULT_PORT);
+        config.setProperty(CONFIG_DATABASE, database);
+
+        return open(config);
+    }
+
+    /**
+     * Open a new {@link TruenoGraph} instance from a configuration file.
+     *
+     * @param file the file which contains the respective configuration.
+     * @return a newly opened {@link TruenoGraph}
+     * @throws ConfigurationException an Exception in case the file could not be opened.
+     */
+    public static TruenoGraph open(final File file) throws ConfigurationException {
+        return open(new PropertiesConfiguration(file));
     }
 
     /**
@@ -143,17 +160,6 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
      */
     @Override
     public Vertex addVertex(final Object... keyValues) {
-
-//        ElementHelper.legalPropertyKeyValueArray(keyValues);
-//        if (ElementHelper.getIdValue(keyValues).isPresent())
-//            throw Vertex.Exceptions.userSuppliedIdsNotSupported();
-
-//        // Neo4JGraphAPIImpl
-//        // https://github.com/neo4j-contrib/neo4j-tinkerpop-api-impl/blob/3.0/src/main/java/org/neo4j/tinkerpop/api/impl/Neo4jGraphAPIImpl.java
-//        final Neo4jVertex vertex =
-//                new Neo4jVertex(this.baseGraph.createNode(ElementHelper.getLabelValue(keyValues).orElse(Vertex.DEFAULT_LABEL).split(Neo4jVertex.LABEL_DELIMINATOR)), this);
-
-//        this.baseGraph.createVertex(ElementHelper.getLabelValue(keyValues));
 
         final TruenoVertex vertex = new TruenoVertex(this.baseGraph.addVertex(), this);
 
@@ -275,10 +281,8 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     @Override
     public void close() throws Exception {
         /* disconnect socket */
-        // FIXME: After implementation of singleton connection (getInstance) there's no access to the trueno api
-        // directly
-        if (this.getGraphAPI() != null)
-            this.getGraphAPI().disconnect();
+        if (this.getBaseGraph() != null)
+        this.getBaseGraph().close();
     }
 
     @Override

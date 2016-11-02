@@ -55,6 +55,7 @@ public class TruenoHelper {
     public static JSONObject getVertex(final TruenoGraph graph, Object id) throws InterruptedException {
         final BlockingQueue<JSONArray> queue = new ArrayBlockingQueue<JSONArray>(1);
 
+//        System.out.println("getVertex :: " + id);
         Filter filter = graph.getBaseGraph().filter().term("_id", id);
         graph.getBaseGraph().fetch(ComponentType.VERTEX, filter)
             .then(result -> {
@@ -288,7 +289,7 @@ public class TruenoHelper {
     public static org.trueno.driver.lib.core.data_structures.Vertex edgeStart (final TruenoEdge edge) {
         org.trueno.driver.lib.core.data_structures.Vertex vertex = new org.trueno.driver.lib.core.data_structures.Vertex();
 
-        System.out.println("edges --> " + edge.getBaseElement());
+//        System.out.println("edges --> " + edge.getBaseElement());
         vertex.setId(edge.getBaseEdge().getSource());
 
         return vertex;
