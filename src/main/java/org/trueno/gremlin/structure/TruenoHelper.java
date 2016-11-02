@@ -22,9 +22,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-// TODO: connection using a singleton pattern
 // TODO: implement a private forceSync in TruenoGraph, to force that all methods behave as sync
-
 /**
  * @author Edgardo Barsallo Yi (ebarsallo)
  */

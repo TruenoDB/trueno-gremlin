@@ -21,7 +21,7 @@ limitations under the License.
 
     <groupId>org.trueno</groupId>
     <artifactId>trueno-gremlin</artifactId>
-    <version>3.2.1</version>
+    <version>3.2.3</version>
     <name>Apache Tinkerpop :: Trueno Gremlin</name>
 
     <dependencies>

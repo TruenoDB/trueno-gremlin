@@ -12,6 +12,10 @@ import static org.apache.tinkerpop.gremlin.process.traversal.dsl.graph.__.is;
 /**
  * @author Edgardo Barsallo Yi (ebarsallo)
  *
+ * Example Graph based on the roman mythology (taken from Titan:db).
+ * The traversal example are based on Titan:db documentation. For more references see:
+ * @see <a href="http://s3.thinkaurelius.com/docs/titan/1.0.0/getting-started.html">Titan:db. Getting Started</a>
+ *
  */
 public class GraphOfTheGods {
 

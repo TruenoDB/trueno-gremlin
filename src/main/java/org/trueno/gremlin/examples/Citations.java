@@ -9,6 +9,9 @@ import org.trueno.gremlin.structure.TruenoGraph;
 /**
  * @author Edgardo Barsallo Yi (ebarsallo)
  *
+ * Example Graph based on a Arvix HEP-TH (high energy physics theory) Citation Network.
+ * @see {<a href="https://snap.stanford.edu/data/cit-HepTh.html">HEP-TH Network from SNAP</a>}
+ *
  */
 public class Citations {
 
