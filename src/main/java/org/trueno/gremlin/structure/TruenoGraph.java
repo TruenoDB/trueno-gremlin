@@ -161,14 +161,17 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     @Override
     public Vertex addVertex(final Object... keyValues) {
 
-        final TruenoVertex vertex = new TruenoVertex(this.baseGraph.addVertex(), this);
+        org.trueno.driver.lib.core.data_structures.Vertex v = this.baseGraph.addVertex();
+        TruenoVertex vertex;
 
         if (!ElementHelper.getIdValue(keyValues).isPresent()) {
             throw new RuntimeException("Id Not Supplied");
         }
+
+        v.setId(ElementHelper.getIdValue(keyValues).get());
+        v.setLabel(ElementHelper.getLabelValue(keyValues).orElse(Vertex.DEFAULT_LABEL));
+        vertex = new TruenoVertex(v, this);
         ElementHelper.attachProperties(vertex, keyValues);
-        vertex.getBaseVertex().setId(ElementHelper.getIdValue(keyValues).get());
-//        System.out.println("addVertex --> " + vertex.getBaseVertex());
         TruenoHelper.persist(vertex);
         return vertex;
     }

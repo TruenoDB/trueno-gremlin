@@ -7,6 +7,7 @@ import org.apache.tinkerpop.gremlin.structure.VertexProperty;
 import org.apache.tinkerpop.gremlin.structure.Property;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
+import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
 import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedVertex;
 import org.json.JSONObject;
 
@@ -132,5 +133,9 @@ public class TruenoVertex extends TruenoElement implements Vertex, WrappedVertex
 //        return (org.trueno.driver.lib.core.data_structures.Vertex)this.getBaseElement();
     }
 
+    @Override
+    public String toString() {
+        return StringFactory.vertexString(this);
+    }
     // FIXME: There should be an addEdge, connectTo or something similar in Vertex, not in Graph.
 }

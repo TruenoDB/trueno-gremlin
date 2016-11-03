@@ -28,6 +28,7 @@ public class GraphOfTheGods {
 
         // Saturn
         Vertex saturn = g.V().has("name", "saturn").next();
+        System.out.println(saturn);
 
         // Get all vertices
         System.out.println(".....");

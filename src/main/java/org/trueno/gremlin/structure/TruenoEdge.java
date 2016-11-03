@@ -4,6 +4,7 @@ import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.Property;
+import org.apache.tinkerpop.gremlin.structure.util.StringFactory;
 import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedEdge;
 import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 import org.json.JSONObject;
@@ -52,6 +53,11 @@ public class TruenoEdge extends TruenoElement implements Edge, WrappedEdge<org.t
             default:
                 return IteratorUtils.of(this.outVertex(), this.inVertex());
         }
+    }
+
+    @Override
+    public String toString() {
+        return StringFactory.edgeString(this);
     }
 
 //    @Override
