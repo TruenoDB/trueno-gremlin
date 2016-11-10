@@ -1,8 +1,12 @@
 package org.trueno.gremlin.structure;
 
 import org.apache.commons.configuration.ConfigurationConverter;
+import org.apache.ivy.util.cli.Option;
+import org.apache.tinkerpop.gremlin.process.traversal.Compare;
+import org.apache.tinkerpop.gremlin.process.traversal.step.util.HasContainer;
 import org.apache.tinkerpop.gremlin.structure.Direction;
 import org.apache.tinkerpop.gremlin.structure.Edge;
+import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.util.iterator.IteratorUtils;
 import org.json.JSONArray;
@@ -41,14 +45,22 @@ public class TruenoHelper {
         final Map config = ConfigurationConverter.getMap(graph.configuration);
         /* Get an instance of the graph */
         graph.baseGraph = TruenoFactory.getInstance(config);
-        /* Open trueno graph for operations */
-        graph.getBaseGraph().open()
-            .then((result) -> {
-                logger.trace("connected to: {}", config.get(TruenoGraph.CONFIG_DATABASE));
-            }).fail((ex) -> {
-                logger.error("{}", ex);
-            });
+        /* Open trueno graph for operations if its stated, otherwise the user has opted to do it programmatically */
+        Object async = config.get(TruenoGraph.CONFIG_ASYNC);
+        if (async != null) {
+            if (async.equals("false")) {
+                graph.getBaseGraph().open()
+                    .then((result) -> {
+                        logger.trace("connected to: {}", config.get(TruenoGraph.CONFIG_DATABASE));
+                    })
+                    .fail((ex) -> {
+                        logger.error("{}", ex);
+                    });
+            }
+        }
     }
+
+
 
     // FIXME: This could be just one function (with argument edge or vertex)
     public static JSONObject getVertex(final TruenoGraph graph, Object id) throws InterruptedException {
@@ -72,6 +84,83 @@ public class TruenoHelper {
            // e.printStackTrace();
             throw new RuntimeException(NOT_FOUND_EXCEPTION);
         }
+    }
+
+//    public static Iterator<Vertex> getAllVertices(final TruenoGraph graph) throws InterruptedException {
+//        final BlockingQueue<JSONArray> queue = new ArrayBlockingQueue<JSONArray>(1);
+//
+//        graph.getBaseGraph().fetch(ComponentType.VERTEX)
+//                .then(result -> {
+//                    queue.add(result);
+//                })
+//                .fail((ex) -> {
+//                    throw new Error ("Something bad happened: " + ex);
+//                });
+//
+//        JSONArray list = queue.take();
+//
+//        return IteratorUtils
+//                .stream(list.iterator())
+//                .map(o -> (Vertex) new TruenoVertex((JSONObject) o, graph)).iterator();
+//    }
+
+
+    public static Iterator<Vertex> getVertex(final TruenoGraph graph, String property, Object value) throws InterruptedException {
+        final BlockingQueue<JSONArray> queue = new ArrayBlockingQueue<JSONArray>(1);
+
+//        System.out.println("getVertex :: " + id);
+        Filter filter = graph.getBaseGraph().filter().term(property, value);
+        graph.getBaseGraph().fetch(ComponentType.VERTEX, filter)
+                .then(result -> {
+                    queue.add(result);
+                System.out.println("[getVertex] Filtering: " + filter.toString() + " result: " + result);
+                }).fail(ex -> {
+            throw new Error ("Something bad happened: " + ex);
+        });
+
+        JSONArray list = queue.take();
+
+        return IteratorUtils
+                .stream(list.iterator())
+                .map(o -> (Vertex) new TruenoVertex((JSONObject) o, graph)).iterator();
+    }
+
+    public static Iterator<Vertex> lookupVertices(final TruenoGraph g, final List<HasContainer> hasContainers, final Object... ids) throws InterruptedException {
+
+        System.out.println("lookupVertices [1]!");
+        // if ids are present, filter them first
+        if (ids.length > 0)
+            return IteratorUtils.filter(g.vertices(ids), vertex -> HasContainer.testAll(vertex, hasContainers));
+        System.out.println("lookupVertices [2]!");
+        // get label
+        Optional<String> label = hasContainers.stream()
+                .filter(hasContainer -> hasContainer.getKey().equals(T.label.getAccessor()))
+                .filter(hasContainer -> Compare.eq == hasContainer.getBiPredicate())
+                .map(hasContainer -> (String) hasContainer.getValue())
+                .findAny();
+        // if label is present
+//        if (label.isPresent()) {
+//            System.out.println("label is present!");
+            // find by label and key/value
+        System.out.println("lookupVertices [3]! " + hasContainers);
+            for (final HasContainer hasContainer : hasContainers) {
+                System.out.print("lookupVertices --> " + T.label.getAccessor() + " * ");
+//                System.out.print(label.get() + " * ");
+                System.out.print(hasContainer.getKey() + " " + hasContainer.getBiPredicate() + " ");
+                System.out.println(hasContainer.getValue() + " * ");
+                if (Compare.eq == hasContainer.getBiPredicate() && !hasContainer.getKey().equals(T.label.getAccessor())) {
+                    System.out.println("using index");
+                    return IteratorUtils.stream(TruenoHelper.getVertex(g, "prop." + hasContainer.getKey(), hasContainer.getValue()))
+                            .filter(vertex -> HasContainer.testAll(vertex, hasContainers)).iterator();
+                }
+            }
+//            return null; //IteratorUtils.stream()
+//        } else {
+//            System.out.println("label is not present!");
+            // find by doing a linear scan
+        System.out.println("linear scan");
+            return IteratorUtils.filter(g.vertices(), vertex -> HasContainer.testAll(vertex, hasContainers));
+//        }
     }
 
     public static JSONObject getEdge(final TruenoGraph graph, Object id) throws InterruptedException {

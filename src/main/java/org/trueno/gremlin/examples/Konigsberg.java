@@ -11,12 +11,11 @@ import org.trueno.gremlin.structure.TruenoGraph;
 import org.trueno.gremlin.structure.TruenoGraphFactory;
 
 /**
- * @author Edgardo Barsallo Yi (ebarsallo)
- *
  * Example Graph based on Konigsberg Problem (seven bridges).
  * @see {<a href="https://en.wikipedia.org/wiki/Seven_Bridges_of_K%C3%B6nigsberg">
  * Seven Bridges of Königsberg</a>}
  *
+ * @author Edgardo Barsallo Yi (ebarsallo)
  */
 public class Konigsberg {
 

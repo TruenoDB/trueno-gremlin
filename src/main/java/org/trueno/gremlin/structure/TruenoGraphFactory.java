@@ -2,11 +2,15 @@ package org.trueno.gremlin.structure;
 
 import org.apache.tinkerpop.gremlin.structure.T;
 import org.apache.tinkerpop.gremlin.structure.Vertex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by ebarsallo on 11/2/16.
  */
 public class TruenoGraphFactory {
+
+    private static final Logger logger = LoggerFactory.getLogger(TruenoHelper.class);
 
     /**
      *
@@ -33,6 +37,19 @@ public class TruenoGraphFactory {
 
         v3.addEdge("bridge", v1, T.id, 6, "name", "Forged Bridge", "german", "Schmiedebrücke");
         v3.addEdge("bridge", v4, T.id, 7, "name", "High Bridge", "german", "Hohe Brücke");
+    }
+
+    public static void openAndGenerateKonigsberg(TruenoGraph graph) {
+        String database = "Seven Bridges database";
+        graph.open()
+                .then( result -> {
+                    logger.info("Loading data into {}", database);
+                    generateKonigsberg(graph);
+                })
+                .fail( error -> {
+                    logger.info("Error while trying to load data into {}", database);
+                    logger.trace("{}", error);
+                });
     }
 
 }

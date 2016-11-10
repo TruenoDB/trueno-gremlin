@@ -7,6 +7,7 @@ import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.lang.NotImplementedException;
 
 import org.apache.tinkerpop.gremlin.process.computer.GraphComputer;
+import org.apache.tinkerpop.gremlin.process.traversal.TraversalStrategies;
 import org.apache.tinkerpop.gremlin.structure.Edge;
 import org.apache.tinkerpop.gremlin.structure.Graph;
 import org.apache.tinkerpop.gremlin.structure.Transaction;
@@ -14,13 +15,19 @@ import org.apache.tinkerpop.gremlin.structure.Vertex;
 import org.apache.tinkerpop.gremlin.structure.util.ElementHelper;
 import org.apache.tinkerpop.gremlin.structure.util.wrapped.WrappedGraph;
 
+import org.jdeferred.Promise;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.trueno.driver.lib.core.Trueno;
 import org.trueno.driver.lib.core.utils.Pair;
+import org.trueno.gremlin.process.traversal.strategy.optimization.TruenoGraphStepStrategy;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 
@@ -29,8 +36,23 @@ import java.util.stream.Stream;
  */
 @Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_STANDARD)
 @Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_PERFORMANCE)
+@Graph.OptIn(Graph.OptIn.SUITE_PROCESS_STANDARD)
 @Graph.OptIn(Graph.OptIn.SUITE_GROOVY_ENVIRONMENT)
 public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.core.data_structures.Graph> {
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(TruenoGraph.class);
+
+    /* register traversal strategy */
+    static {
+        TraversalStrategies.GlobalCache.registerStrategies(
+                TruenoGraph.class,
+                TraversalStrategies.GlobalCache
+                        .getStrategies(Graph.class).clone().addStrategies(TruenoGraphStepStrategy.instance()));
+    }
+
+    private static final Configuration EMPTY_CONFIGURATION = new BaseConfiguration() {{
+        this.setProperty(Graph.GRAPH, TruenoGraph.class.getName());
+    }};
 
     /* Trueno Graph API */
     protected Trueno graphAPI;
@@ -47,6 +69,7 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     public static final String CONFIG_SERVER   = "trueno.storage.server";
     public static final String CONFIG_PORT     = "trueno.storage.port";
     public static final String CONFIG_DATABASE = "trueno.storage.database";
+    public static final String CONFIG_ASYNC    = "trueno.storage.async";
     public static final String CONFIG_CONF     = "trueno.storage.conf";
 
     /* Graph configuration */
@@ -88,6 +111,13 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     }
 
     protected TruenoGraph(final Configuration configuration) {
+        this(configuration, false);
+    }
+
+    public TruenoGraph(final Configuration configuration, boolean async) {
+        /* Check for async indicator */
+        configuration.setProperty(TruenoGraph.CONFIG_ASYNC,
+                configuration.getString(TruenoGraph.CONFIG_ASYNC, Boolean.toString(async)));
         this.configuration.copy(configuration);
         /* Create an instance of */
         Trueno trueno = new Trueno(configuration.getString(CONFIG_SERVER), configuration.getInt(CONFIG_PORT));
@@ -96,7 +126,8 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     }
 
     /**
-     * Open a new {@link TruenoGraph} instance from a configuration {@link Configuration}.
+     * Open a new {@link TruenoGraph} instance from a configuration {@link Configuration}. This method is invoke by
+     * {@link org.apache.tinkerpop.gremlin.structure.util.GraphFactory} to create a {@link Graph} instance.
      *
      * @param configuration the configuration for the instance.
      * @return a newly opened {@link TruenoGraph}
@@ -155,6 +186,22 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
         return open(config);
     }
 
+    public Promise<org.trueno.driver.lib.core.data_structures.Graph, JSONObject, Integer> open() {
+        return this.getBaseGraph().open();
+    }
+
+
+    /**
+     * Construct a {@link TruenoGraph} instance using an existing Trueno graph raw instance (graph)
+     *
+     * @param baseGraph
+     * @return
+     */
+    // TODO: finish this.
+//    public static TruenoGraph open(final org.trueno.driver.lib.core.data_structures.Graph baseGraph) {
+//        return new Neo4jGraph(baseGraph, EMPTY_CONFIGURATION);
+//    }
+
     /**
      * {@inheritDoc}
      */
@@ -187,7 +234,7 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     }
 
     @Override
-    public Iterator<Vertex> vertices(Object... vertexIds) {
+    public Iterator<Vertex> vertices(final Object... vertexIds) {
         // TODO: Move basic functionality to TruenoHelper
         final List<Vertex> vertices = new ArrayList<>();
 
@@ -230,7 +277,7 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     }
 
     @Override
-    public Iterator<Edge> edges(Object... edgeIds) {
+    public Iterator<Edge> edges(final Object... edgeIds) {
         // TODO: Move basic functionality to TruenoHelper
         final List<Edge> edges = new ArrayList<>();
 
