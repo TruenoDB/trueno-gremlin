@@ -105,24 +105,64 @@ public class TruenoHelper {
 //    }
 
 
-    public static Iterator<Vertex> getVertex(final TruenoGraph graph, String property, Object value) throws InterruptedException {
+    public static Iterator<Vertex> findVertex(final TruenoGraph graph, Optional<String> label) throws InterruptedException {
+
+        Filter filter = graph.getBaseGraph().filter().term("label", label.get());
+
+//        graph.getBaseGraph().fetch(ComponentType.VERTEX, filter)
+//                .then(result -> {
+//                    System.out.println("[findVertex] result: " + result);
+//                }).fail(ex -> {
+//            throw new Error ("Something bad happened: " + ex);
+//        });
+
+        //return Collections.emptyIterator() ;
+        return findVertex(graph, filter);
+    }
+
+    public static Iterator<Vertex> findVertex(final TruenoGraph graph, Optional<String> label, String property, Object value) throws InterruptedException {
+
+        String prefix = "prop.";
+        Filter filter = graph.getBaseGraph().filter().term(prefix + property, value);
+
+        if (label.isPresent()) {
+            filter.term("label", label.get());
+        }
+
+        return findVertex(graph, filter);
+    }
+
+//    public static Iterator<Vertex> getVertex(final TruenoGraph graph, String property, Object value) throws InterruptedException {
+    public static Iterator<Vertex> findVertex(final TruenoGraph graph, final Filter filter) throws InterruptedException {
+
+//        try {
         final BlockingQueue<JSONArray> queue = new ArrayBlockingQueue<JSONArray>(1);
 
 //        System.out.println("getVertex :: " + id);
-        Filter filter = graph.getBaseGraph().filter().term(property, value);
+//        Filter filter = graph.getBaseGraph().filter().term(property, value);
+        System.out.println("\n[findVertex] ");
         graph.getBaseGraph().fetch(ComponentType.VERTEX, filter)
                 .then(result -> {
+                    System.out.println("[findVertex] result: ");
                     queue.add(result);
-                System.out.println("[getVertex] Filtering: " + filter.toString() + " result: " + result);
                 }).fail(ex -> {
-            throw new Error ("Something bad happened: " + ex);
-        });
+                    throw new Error ("Something bad happened: " + ex);
+                });
 
-        JSONArray list = queue.take();
 
-        return IteratorUtils
-                .stream(list.iterator())
-                .map(o -> (Vertex) new TruenoVertex((JSONObject) o, graph)).iterator();
+//            System.out.println("echo echo");
+            JSONArray list = queue.take();
+//            System.out.println("echoooo");
+            return IteratorUtils
+                    .stream(list.iterator())
+                    .map(o -> (Vertex) new TruenoVertex((JSONObject) o, graph)).iterator();
+//            return Collections.emptyIterator() ;
+//        } catch (Exception e) {
+//            System.out.println(e);
+//            return Collections.emptyIterator() ;
+//        }
+
+
     }
 
     public static Iterator<Vertex> lookupVertices(final TruenoGraph g, final List<HasContainer> hasContainers, final Object... ids) throws InterruptedException {
@@ -138,27 +178,67 @@ public class TruenoHelper {
                 .filter(hasContainer -> Compare.eq == hasContainer.getBiPredicate())
                 .map(hasContainer -> (String) hasContainer.getValue())
                 .findAny();
+
+        if (label.isPresent()) {
+            System.out.println("lookupVertices [3]! --> label is present");
+        }
+
         // if label is present
 //        if (label.isPresent()) {
 //            System.out.println("label is present!");
             // find by label and key/value
-        System.out.println("lookupVertices [3]! " + hasContainers);
+        System.out.println("lookupVertices [4]! " + hasContainers);
+
+        if (label.isPresent()) {
+
+            // find vertex by label and property (key/value)
             for (final HasContainer hasContainer : hasContainers) {
-                System.out.print("lookupVertices --> " + T.label.getAccessor() + " * ");
-//                System.out.print(label.get() + " * ");
-                System.out.print(hasContainer.getKey() + " " + hasContainer.getBiPredicate() + " ");
-                System.out.println(hasContainer.getValue() + " * ");
+
+//                System.out.print("lookupVertices --> " + T.label.getAccessor() + " * ");
+//
+//                System.out.print(">0>hCont:>" + hasContainer + "<0< * ");
+//                System.out.print(">2>hCont.getKey:>" + hasContainer.getKey() + "<2< - ");
+//                System.out.print(">3>" + hasContainer.getBiPredicate() + "<3< - ");
+//                System.out.println(">4>hCont.getVal:>" + hasContainer.getValue() + "<4< * ");
+
                 if (Compare.eq == hasContainer.getBiPredicate() && !hasContainer.getKey().equals(T.label.getAccessor())) {
-                    System.out.println("using index");
-                    return IteratorUtils.stream(TruenoHelper.getVertex(g, "prop." + hasContainer.getKey(), hasContainer.getValue()))
+                    logger.info("find by label and using index");
+                    return IteratorUtils.stream(TruenoHelper.findVertex(g, label, hasContainer.getKey(), hasContainer.getValue()))
                             .filter(vertex -> HasContainer.testAll(vertex, hasContainers)).iterator();
                 }
             }
+
+            // find vertex by label
+            logger.info("find by label");
+//            System.out.print(">1>label.get:>" + label.get() + "<1< * ");
+            return IteratorUtils.stream(TruenoHelper.findVertex(g, label))
+                    .filter(vertex -> HasContainer.testAll(vertex, hasContainers)).iterator();
+        } else {
+
+            // find vertex by property (key/value)
+            // find vertex by label and property (key/value)
+            for (final HasContainer hasContainer : hasContainers) {
+
+//                System.out.print("lookupVertices --> " + T.label.getAccessor() + " * ");
+//
+//                System.out.print(">0>hCont:>" + hasContainer + "<0< * ");
+//                System.out.print(">2>hCont.getKey:>" + hasContainer.getKey() + "<2< - ");
+//                System.out.print(">3>" + hasContainer.getBiPredicate() + "<3< - ");
+//                System.out.println(">4>hCont.getVal:>" + hasContainer.getValue() + "<4< * ");
+
+                if (Compare.eq == hasContainer.getBiPredicate() && !hasContainer.getKey().equals(T.label.getAccessor())) {
+                    logger.info("find using index");
+                    return IteratorUtils.stream(TruenoHelper.findVertex(g, label, hasContainer.getKey(), hasContainer.getValue()))
+                            .filter(vertex -> HasContainer.testAll(vertex, hasContainers)).iterator();
+                }
+            }
+
+        }
 //            return null; //IteratorUtils.stream()
 //        } else {
 //            System.out.println("label is not present!");
             // find by doing a linear scan
-        System.out.println("linear scan");
+        logger.info("linear scan");
             return IteratorUtils.filter(g.vertices(), vertex -> HasContainer.testAll(vertex, hasContainers));
 //        }
     }

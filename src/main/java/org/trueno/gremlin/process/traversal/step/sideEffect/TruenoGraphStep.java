@@ -63,12 +63,12 @@ public final class TruenoGraphStep<S, E extends Element> extends GraphStep<S, E>
     private Iterator<? extends Vertex> vertices() {
         TruenoGraph graph =  (TruenoGraph)this.getTraversal().getGraph().get();
 
-        System.out.println("TruenoGraphStep!");
-        for (int i=0; i<this.getIds().length; i++)
-            System.out.println("traversal --> " + i + this.getIds()[i]);
+//        System.out.println("TruenoGraphStep!");
+//        for (int i=0; i<this.getIds().length; i++)
+//            System.out.println("traversal --> " + i + this.getIds()[i]);
 
-        for (final HasContainer h : this.hasContainers)
-            System.out.println("traversal hasContainer --> " + h.getKey() + " " + h.getBiPredicate() + " " + h.getValue() );
+//        for (final HasContainer h : this.hasContainers)
+//            System.out.println("traversal hasContainer --> " + h.getKey() + " " + h.getBiPredicate() + " " + h.getValue() );
 
         try {
             return TruenoHelper.lookupVertices(graph, hasContainers, ids);

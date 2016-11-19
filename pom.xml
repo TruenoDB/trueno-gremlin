@@ -47,7 +47,7 @@ limitations under the License.
         </dependency>
         <!-- TODO: change to maven repository when the java-driver is stable -->
         <dependency>
-            <groupId>org.trueno.driver</groupId>
+            <groupId>org.trueno</groupId>
             <artifactId>trueno-java-driver</artifactId>
             <version>0.1.0</version>
             <scope>system</scope>
@@ -66,7 +66,17 @@ limitations under the License.
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
+
+    <properties>
+        <slf4j.version>1.7.21</slf4j.version>
+    </properties>
 
     <build>
         <directory>${basedir}/target</directory>
@@ -97,6 +107,9 @@ limitations under the License.
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <skipTests>true</skipTests>
+                    <systemPropertyVariables>
+                        <log4j.configuration>file:conf/log4j-test.properties</log4j.configuration>
+                    </systemPropertyVariables>
                 </configuration>
             </plugin>
             <plugin>
