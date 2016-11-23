@@ -23,6 +23,8 @@ import org.trueno.driver.lib.core.utils.Pair;
 import java.util.*;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -60,7 +62,13 @@ public class TruenoHelper {
         }
     }
 
-
+    public static boolean isPredicateSupported(final BiPredicate<?, ?> predicate) {
+        if (Compare.eq == predicate)
+            return  true;
+        else if (predicate.equals("within"))
+            return true;
+        return false;
+    }
 
     // FIXME: This could be just one function (with argument edge or vertex)
     public static JSONObject getVertex(final TruenoGraph graph, Object id) throws InterruptedException {
@@ -108,22 +116,31 @@ public class TruenoHelper {
     public static Iterator<Vertex> findVertex(final TruenoGraph graph, Optional<String> label) throws InterruptedException {
 
         Filter filter = graph.getBaseGraph().filter().term("label", label.get());
-
-//        graph.getBaseGraph().fetch(ComponentType.VERTEX, filter)
-//                .then(result -> {
-//                    System.out.println("[findVertex] result: " + result);
-//                }).fail(ex -> {
-//            throw new Error ("Something bad happened: " + ex);
-//        });
-
-        //return Collections.emptyIterator() ;
         return findVertex(graph, filter);
     }
 
-    public static Iterator<Vertex> findVertex(final TruenoGraph graph, Optional<String> label, String property, Object value) throws InterruptedException {
+    public static Iterator<Vertex> findVertex(final TruenoGraph graph, Optional<String> label,
+                                              final BiPredicate<?, ?> predicate, String property, Object value) throws InterruptedException {
 
-        String prefix = "prop.";
-        Filter filter = graph.getBaseGraph().filter().term(prefix + property, value);
+        String key = "prop.".concat(property);
+        Filter filter = graph.getBaseGraph().filter();
+
+        System.out.println("findVertex :: predicate --> [" + predicate.toString() + "]");
+
+        if (Compare.eq == predicate) {
+//            System.out.println("findVertex :: equal");
+            filter.term(key, value);
+        } else if (predicate.toString().equals("within")) {
+//            System.out.println("findVertex :: within");
+            StringJoiner sj = new StringJoiner("|");
+            for (Object item : (List)value) {
+                sj.add(item.toString());
+            }
+            filter.regexp(key, sj.toString());
+//            System.out.println("findVertex :: filter (regexp) --> " + sj);
+        } else {
+            System.out.println("BiPredicate Not supported");
+        }
 
         if (label.isPresent()) {
             filter.term("label", label.get());
@@ -201,9 +218,9 @@ public class TruenoHelper {
 //                System.out.print(">3>" + hasContainer.getBiPredicate() + "<3< - ");
 //                System.out.println(">4>hCont.getVal:>" + hasContainer.getValue() + "<4< * ");
 
-                if (Compare.eq == hasContainer.getBiPredicate() && !hasContainer.getKey().equals(T.label.getAccessor())) {
+                if (!hasContainer.getKey().equals(T.label.getAccessor())) {
                     logger.info("find by label and using index");
-                    return IteratorUtils.stream(TruenoHelper.findVertex(g, label, hasContainer.getKey(), hasContainer.getValue()))
+                    return IteratorUtils.stream(TruenoHelper.findVertex(g, label, hasContainer.getBiPredicate(), hasContainer.getKey(), hasContainer.getValue()))
                             .filter(vertex -> HasContainer.testAll(vertex, hasContainers)).iterator();
                 }
             }
@@ -224,11 +241,13 @@ public class TruenoHelper {
 //                System.out.print(">0>hCont:>" + hasContainer + "<0< * ");
 //                System.out.print(">2>hCont.getKey:>" + hasContainer.getKey() + "<2< - ");
 //                System.out.print(">3>" + hasContainer.getBiPredicate() + "<3< - ");
-//                System.out.println(">4>hCont.getVal:>" + hasContainer.getValue() + "<4< * ");
+//                System.out.print(">4>hCont.getVal:>" + hasContainer.getValue() + "<4< * ");
+//                System.out.println(">5>hCont.getVal[i]:>" + (hasContainer.getValue()).getClass() + "<5< * ");
+//                System.out.println(">6>hCont.getVal[i]:>" + ((List)(hasContainer.getValue())).get(0) + "<6< * ");
 
-                if (Compare.eq == hasContainer.getBiPredicate() && !hasContainer.getKey().equals(T.label.getAccessor())) {
+                if (!hasContainer.getKey().equals(T.label.getAccessor())) {
                     logger.info("find using index");
-                    return IteratorUtils.stream(TruenoHelper.findVertex(g, label, hasContainer.getKey(), hasContainer.getValue()))
+                    return IteratorUtils.stream(TruenoHelper.findVertex(g, label, hasContainer.getBiPredicate(), hasContainer.getKey(), hasContainer.getValue()))
                             .filter(vertex -> HasContainer.testAll(vertex, hasContainers)).iterator();
                 }
             }
