@@ -32,6 +32,8 @@ import java.util.stream.Stream;
 
 
 /**
+ * A {@link TruenoGraph} denotes the representation of a {@link Graph} instance in Trueno database.
+ *
  * @author Edgardo Barsallo Yi (ebarsallo)
  */
 @Graph.OptIn(Graph.OptIn.SUITE_STRUCTURE_STANDARD)
@@ -94,7 +96,7 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
     /**
      * Initialize {@link TruenoGraph} instance.
      *
-     * @param graphAPI the instance of TruenoGraph.
+     * @param graphAPI      the instance of TruenoGraph.
      * @param configuration the configuration.
      */
     private void initialize(final Trueno graphAPI, final Configuration configuration) {
@@ -130,7 +132,7 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
      * {@link org.apache.tinkerpop.gremlin.structure.util.GraphFactory} to create a {@link Graph} instance.
      *
      * @param configuration the configuration for the instance.
-     * @return a newly opened {@link TruenoGraph}
+     * @return the newly opened {@link TruenoGraph}.
      */
     public static TruenoGraph open(final Configuration configuration) {
         if (null == configuration) throw  Graph.Exceptions.argumentCanNotBeNull("configuration");
@@ -146,8 +148,8 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
      * Open a new {@link TruenoGraph} instance from a configuration file.
      *
      * @param database the trueno database name.
-     * @return a newly opened {@link TruenoGraph}
-     * @throws ConfigurationException an Exception in case the file could not be opened.
+     * @return the newly opened {@link TruenoGraph}
+     * @throws ConfigurationException thrown if the file could not be opened.
      */
     public static TruenoGraph open(final String database) throws ConfigurationException {
         final Configuration config = new BaseConfiguration();
@@ -162,8 +164,8 @@ public class TruenoGraph implements Graph, WrappedGraph<org.trueno.driver.lib.co
      * Open a new {@link TruenoGraph} instance from a configuration file.
      *
      * @param file the file which contains the respective configuration.
-     * @return a newly opened {@link TruenoGraph}
-     * @throws ConfigurationException an Exception in case the file could not be opened.
+     * @return the newly opened {@link TruenoGraph}
+     * @throws ConfigurationException thrown if the file could not be opened.
      */
     public static TruenoGraph open(final File file) throws ConfigurationException {
         return open(new PropertiesConfiguration(file));

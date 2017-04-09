@@ -6,15 +6,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Created by ebarsallo on 11/2/16.
+ * {@link TruenoGraphFactory} creates populated instance of {@link TruenoGraph}. Basically, it's aimed to be used for
+ * test purpose.
+ *
+ * @author Edgardo Barsallo Yi (ebarsallo)
  */
 public class TruenoGraphFactory {
 
     private static final Logger logger = LoggerFactory.getLogger(TruenoHelper.class);
 
     /**
+     * Populate an {@link TruenoGraph} with the elements (vertices and edges) of the Koninsberg example (seven bridges
+     * problem)
      *
-     * @param graph
+     * @param graph the TruenoGraph instance.
      *
      * @see {<a href="https://upload.wikimedia.org/wikipedia/commons/4/40/K%C3%B6nigsberg_Stadtplan_1905.svg">
      *     Map of Königsberg, 1905</a>}
@@ -39,6 +44,12 @@ public class TruenoGraphFactory {
         v3.addEdge("bridge", v4, T.id, 7, "name", "High Bridge", "german", "Hohe Brücke");
     }
 
+    /**
+     * Open an {@link TruenoGraph} instance and populate it with the the elemeents of the Koninsberg example (seven
+     * bridges problem).
+     *
+     * @param graph the TruenoGraph instance.
+     */
     public static void openAndGenerateKonigsberg(TruenoGraph graph) {
         String database = "Seven Bridges database";
         graph.open()
